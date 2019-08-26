@@ -2,9 +2,13 @@
   "name": "bombayjs",
   "version": "1.0.0",
   "description": "前端监控sdk",
-  "main": "index.js",
+  "main": "dist/bombay.js",
   "scripts": {
     "build": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abc-club/bombayjs"
   },
   "author": "https://github.com/aoping",
   "license": "ISC",
