@@ -11,7 +11,7 @@ export default class Bombay {
 
   init(options) {
     // 没有appId,则不监听任何事件
-    if (!options.appId) {
+    if (options && !options.appId) {
       console.warn('请输入一个appId')
       return
     }

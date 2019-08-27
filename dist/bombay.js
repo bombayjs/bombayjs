@@ -61,7 +61,6 @@
     function setConfig(options) {
         Config = __assign({}, Config, options);
     }
-    //# sourceMappingURL=index.js.map
 
     function randomString(len) {
         len = len || 10;
@@ -82,7 +81,6 @@
             }
         return str.join("&");
     }
-    //# sourceMappingURL=tools.js.map
 
     function getCommonMsg() {
         var u = navigator.connection;
@@ -140,7 +138,6 @@
         var h = document.documentElement.clientHeight || document.body.clientHeight;
         return w + 'x' + h;
     }
-    //# sourceMappingURL=index.js.map
 
     function handleErr(error) {
         switch (error.type) {
@@ -202,7 +199,7 @@
         }
         Bombay.prototype.init = function (options) {
             // 没有appId,则不监听任何事件
-            if (!options.appId) {
+            if (options && !options.appId) {
                 console.warn('请输入一个appId');
                 return;
             }
@@ -237,7 +234,6 @@
         };
         return Bombay;
     }());
-    //# sourceMappingURL=index.js.map
 
     return Bombay;
 
