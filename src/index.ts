@@ -1,5 +1,5 @@
-import { defaultConfig, setConfig } from './config'
-import { errorEvent, unhandledrejection} from './handlers'
+import { Config, setConfig } from './config'
+import { handleErr } from './handlers'
 
 export default class Bombay {
   config: ConfigParams
@@ -10,15 +10,24 @@ export default class Bombay {
   }
 
   init(options) {
+    // 没有appId,则不监听任何事件
+    if (!options.appId) {
+      console.warn('请输入一个appId')
+      return
+    }
     setConfig(options)
-    defaultConfig.isError && this.addListenJs();
-    defaultConfig.isAjax && this.addListenAjax();
-    defaultConfig.isRecord && this.addRrweb();
+    Config.isError && this.addListenJs();
+    Config.isAjax && this.addListenAjax();
+    Config.isRecord && this.addRrweb();
   }
 
   addListenJs() {
-    window.addEventListener("error", errorEvent, true);
-    window.addEventListener("unhandledrejection", unhandledrejection);
+    // js错误或静态资源加载错误
+    window.addEventListener("error", handleErr, true);
+    //promise错误
+    window.addEventListener("unhandledrejection", handleErr);
+    // window.addEventListener('rejectionhandled', rejectionhandled, true);
+    
   }
 
   addListenAjax() {
@@ -30,8 +39,8 @@ export default class Bombay {
   }
 
   removeListenJs() {
-    window.removeEventListener("error", errorEvent, true);
-    window.removeEventListener("unhandledrejection", unhandledrejection);
+    window.removeEventListener("error", handleErr, true);
+    window.removeEventListener("unhandledrejection", handleErr);
   }
 
   removeListenAjax() {
@@ -43,8 +52,8 @@ export default class Bombay {
   }
 
   destroy() {
-    defaultConfig.isError && this.removeListenJs()
-    defaultConfig.isAjax && this.removeListenAjax()
-    defaultConfig.isRecord && this.removeRrweb()
+    Config.isError && this.removeListenJs()
+    Config.isAjax && this.removeListenAjax()
+    Config.isRecord && this.removeRrweb()
   }
 }

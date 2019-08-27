@@ -3,7 +3,9 @@ import typescript from "rollup-plugin-typescript";
 import commonjs from "rollup-plugin-commonjs";
 import resolve from "rollup-plugin-node-resolve";
 import { uglify } from "rollup-plugin-uglify";
-console.log(typescript)
+import replace from 'rollup-plugin-replace';
+let pkg = require('./package.json');
+
 export default {
   input: "src/index.ts",
   output: {
@@ -12,6 +14,10 @@ export default {
     name: "Bombay"
   },
   plugins: [
+    replace({
+      VERSION: pkg.version,
+      delimiters: ['{{', '}}']
+    }),
     typescript(),
     commonjs({ extensions: [".js", ".ts"] }),
     resolve({

@@ -1,11 +1,17 @@
 // 默认参数
-export let defaultConfig = {
+export let Config = {
   // 上报地址
-  domain: 'http://localhost/api',
+  reportUrl: 'http://localhost:10000',
   // 提交参数
   appId: '',
+  // app版本
+  appVersion: '1.0.0',
+  // 环境
+  environment: 'production',
   // 脚本延迟上报时间
   outtime: 300,
+  // 开启单页面？
+  enableSPA: true,
   // ajax请求时需要过滤的url信息
   filterUrl: ['/api/v1/report/web', 'livereload.js?snipver=1', '/sockjs-node/info'],
   // 是否上报页面性能数据
@@ -22,8 +28,8 @@ export let defaultConfig = {
 
 // 设置参数
 export function setConfig(options) {
-  defaultConfig = {
-    ...defaultConfig,
+  Config = {
+    ...Config,
       ...options
   }
 }

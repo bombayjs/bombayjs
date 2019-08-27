@@ -1,6 +1,6 @@
 {
   "name": "bombayjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "前端监控sdk",
   "main": "dist/bombay.js",
   "scripts": {
@@ -19,6 +19,7 @@
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.0.2",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-typescript": "^1.0.1",
     "rollup-plugin-uglify": "^6.0.2",
     "webpack": "^4.39.2"
