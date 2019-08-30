@@ -16,6 +16,7 @@ export function handleErr(error): void {
   }
 }
 
+// 上报错误
 function report(msg:any) {
   new Image().src = `${Config.reportUrl}?${serialize(msg)}`
 }
@@ -92,3 +93,11 @@ function reportHttpError(msg:CommonMsg,data:any):void{
   // // console.log('httpError :' + queryString(msg))
   // new Image().src = `${Config.reportUrl}?commit=${queryString(msg)}`
 }
+
+// 上报pv
+function reportPv(): void {
+  let commonMsg = getCommonMsg()
+  report(commonMsg)
+}
+
+

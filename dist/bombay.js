@@ -61,6 +61,7 @@
     function setConfig(options) {
         Config = __assign({}, Config, options);
     }
+    //# sourceMappingURL=index.js.map
 
     function randomString(len) {
         len = len || 10;
@@ -81,6 +82,7 @@
             }
         return str.join("&");
     }
+    //# sourceMappingURL=tools.js.map
 
     function getCommonMsg() {
         var u = navigator.connection;
@@ -138,6 +140,7 @@
         var h = document.documentElement.clientHeight || document.body.clientHeight;
         return w + 'x' + h;
     }
+    //# sourceMappingURL=index.js.map
 
     function handleErr(error) {
         switch (error.type) {
@@ -152,6 +155,7 @@
             //   break;
         }
     }
+    // 上报错误
     function report(msg) {
         new Image().src = Config.reportUrl + "?" + serialize(msg);
     }
@@ -234,6 +238,7 @@
         };
         return Bombay;
     }());
+    //# sourceMappingURL=index.js.map
 
     return Bombay;
 
