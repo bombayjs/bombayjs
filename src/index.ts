@@ -10,9 +10,9 @@ export default class Bombay {
   }
 
   init(options) {
-    // 没有appId,则不监听任何事件
-    if (options && !options.appId) {
-      console.warn('请输入一个appId')
+    // 没有token,则不监听任何事件
+    if (options && !options.token) {
+      console.warn('请输入一个token')
       return
     }
     setConfig(options)

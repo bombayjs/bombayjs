@@ -3,7 +3,7 @@ export let Config = {
   // 上报地址
   reportUrl: 'http://localhost:10000',
   // 提交参数
-  appId: '',
+  token: '',
   // app版本
   appVersion: '1.0.0',
   // 环境

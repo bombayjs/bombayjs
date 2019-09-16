@@ -1,6 +1,6 @@
 interface ConfigParams {
   domain:string
-  appId:string
+  token:string
   record: boolean
 }
 
@@ -19,8 +19,8 @@ interface CommonMsg{
   page: string // 页面
   times?: number // 次数
   v: string // 版本
-  appId: string // 项目id
-  e: string // 环境
+  token: string // 项目id
+  e: string // 开发生产环境
   begin: number // 开始时间戳
   uid: string // user id
   sid: string // session id
@@ -47,13 +47,13 @@ interface ErrorMsg extends CommonMsg{
 }
 
 interface ResourceMsg extends CommonMsg{
-  outerHTML:string
+  msg:string
   src:string
   tagName:string
 }
 
 interface PromiseMsg extends CommonMsg{
-  message:string,
+  msg:string,
 }
 
 interface ApiMsg extends CommonMsg{

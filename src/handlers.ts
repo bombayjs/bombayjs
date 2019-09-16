@@ -50,7 +50,7 @@ function reportResourceError(error:any):void{
     ...commonMsg,
     ...{
       t: 'resource',
-      outerHTML: target.outerHTML,
+      msg: target.outerHTML,
       src: target.src,
       tagName: target.localName.toUpperCase(),
     }
@@ -66,7 +66,7 @@ function reportPromiseError(error:any):void{
     ...commonMsg,
     ...{
       t: 'promise',
-      message: error.reason,
+      msg: error.reason,
     }
   }
   report(msg)

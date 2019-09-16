@@ -35,7 +35,7 @@
         // 上报地址
         reportUrl: 'http://localhost:10000',
         // 提交参数
-        appId: '',
+        token: '',
         // app版本
         appVersion: '1.0.0',
         // 环境
@@ -92,7 +92,7 @@
             page: Config.enableSPA && location.hash ? location.hash.replace('#', '') : location.pathname,
             times: 1,
             v: Config.appVersion,
-            appId: Config.appId,
+            token: Config.token,
             e: Config.environment,
             begin: new Date().getTime(),
             uid: getUid(),
@@ -106,7 +106,7 @@
             vp: getScreen(),
             ul: getLang(),
             ct: u ? u.effectiveType : '',
-            _v: '1.0.1',
+            _v: '1.0.2',
         };
         return data;
     }
@@ -180,7 +180,7 @@
         var target = error.target;
         var msg = __assign({}, commonMsg, {
             t: 'resource',
-            outerHTML: target.outerHTML,
+            msg: target.outerHTML,
             src: target.src,
             tagName: target.localName.toUpperCase(),
         });
@@ -192,7 +192,7 @@
         var commonMsg = getCommonMsg();
         var msg = __assign({}, commonMsg, {
             t: 'promise',
-            message: error.reason,
+            msg: error.reason,
         });
         report(msg);
     }
@@ -202,9 +202,9 @@
             this.init(options);
         }
         Bombay.prototype.init = function (options) {
-            // 没有appId,则不监听任何事件
-            if (options && !options.appId) {
-                console.warn('请输入一个appId');
+            // 没有token,则不监听任何事件
+            if (options && !options.token) {
+                console.warn('请输入一个token');
                 return;
             }
             setConfig(options);

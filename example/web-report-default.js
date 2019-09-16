@@ -460,7 +460,7 @@ function Performance(option, fn) {
                     .then((res) => {
                         if (result.type === 'report-data') return res;
                         try {
-                            debugger
+                            // debugger
                             const url = res.url ? res.url.split('?')[0] : '';
                             res.clone().text().then(data => { if (conf.ajaxMsg[url]) conf.ajaxMsg[url]['decodedBodySize'] = data.length; })
                         } catch (e) { }
@@ -513,7 +513,7 @@ function Performance(option, fn) {
         function _error() {
             // img,script,css,jsonp
             window.addEventListener('error', function (e) {
-                debugger
+                // debugger
                 let defaults = Object.assign({}, errordefo);
                 defaults.n = 'resource'
                 defaults.t = new Date().getTime();

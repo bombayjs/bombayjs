@@ -11,14 +11,28 @@
   index
   <script>
     new Bombay({
-      appId: 'Jec4crW1567148363900',
+      token: 'Pj5YhcR1568173556213',
       reportUrl: 'http://127.0.0.1:7002/api/v1/report/web'
     })
   </script>
   <!-- <script src='./a.js'></script> -->
-  <!-- <script src='./b.js'></script> -->
+  <script src='./b.js'></script>
   <script>
-    console.log(a)
+    // console.log(b)
+    function A () {
+      B()
+    }
+
+    function B() {
+      C()
+    }
+
+    function C() {
+      console.log(c)
+    }
+
+    A()
+
     // setTimeout(()=> {
     //   console.log(a)
     // },1000)

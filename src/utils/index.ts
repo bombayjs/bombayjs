@@ -9,7 +9,7 @@ export function getCommonMsg() {
     page: Config.enableSPA && location.hash ? location.hash.replace('#', '') : location.pathname,
     times: 1,
     v: Config.appVersion,
-    appId: Config.appId,
+    token: Config.token,
     e: Config.environment,
     begin: new Date().getTime(),
     uid: getUid(),
