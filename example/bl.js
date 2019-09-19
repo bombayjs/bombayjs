@@ -22,7 +22,9 @@
       return a
   }
   return e
-}()({
+}()(
+  {
+  // base
   1: [function (e, t, n) {
       var r = e("./util"),
           a = e("./common/sendBeacon"),
@@ -78,6 +80,7 @@
                   } return !n && r.warn("[retcode] invalid url: " + e), n
           },
           $ac: function () {},
+          // 健康检查上报方式
           $ad: function (e) {
               a(e, this.getConfig("imgUrl"))
           },
@@ -115,13 +118,16 @@
           $a4: function () {
               var e;
               clearTimeout(this.$a3), this.$a3 = null;
-              for (var t = this._conf && "function" == typeof this._conf.sendRequest; e = this.$a1
-                  .pop();) "res" === e.t ? this.$ae(e, "res") : "error" === e.t ? this.$ae(e,
-                      "err") : "behavior" === e.t ? this.$ae(e, "behavior") : "health" === e.t &&
-                  !t && window && window.navigator && "function" == typeof window.navigator.sendBeacon ?
-                  this.$ad(e) : this.$ac(e);
+              for (var t = this._conf && "function" == typeof this._conf.sendRequest; e = this.$a1.pop();)
+                "res" === e.t ? 
+                  this.$ae(e, "res") 
+                  : "error" === e.t ? this.$ae(e, "err") 
+                  : "behavior" === e.t ? this.$ae(e, "behavior") 
+                  : "health" === e.t && !t && window && window.navigator && "function" == typeof window.navigator.sendBeacon ? this.$ad(e) 
+                  : this.$ac(e);
               return this
           },
+          // 上报
           _lg: function (e, t, n) {
               var a = this._conf,
                   i = this.$a7(),
@@ -151,8 +157,8 @@
                       c3: a.c3
                   }), function (e, t) {
                       var n; {
-                          if ("error" !== t.t || !(n = e.$a1[0]) || "error" !== n.t || t.msg !==
-                              n.msg) {
+                        // debugger
+                          if ("error" !== t.t || !(n = e.$a1[0]) || "error" !== n.t || t.msg !== n.msg) {
                               if ("behavior" === t.t) {
                                   var a = e.$a1 && e.$a1.length;
                                   if (a > 0 && "behavior" === e.$a1[a - 1].t) {
@@ -171,6 +177,7 @@
                       }
                   }(this, t)) : this
           },
+          // 用户自定义上报
           custom: function (e, t) {
               if (!e || "object" != typeof e) return this;
               var n = !1,
@@ -187,6 +194,7 @@
       "./common/sendBeacon": 12,
       "./util": 16
   }],
+  // behavior
   2: [function (e, t, n) {
       var r = e("../util");
       t.exports = function (e, t) {
@@ -338,10 +346,8 @@
                                   u(t.console, r, function (e) {
                                       var n = r;
                                       return function () {
-                                          for (var r = arguments.length,
-                                                  i = new Array(r), o =
-                                                  0; o < r; o++) i[o] =
-                                              arguments[o];
+                                          for (var r = arguments.length, i = new Array(r), o = 0; o < r; o++)
+                                          i[o] = arguments[o];
                                           var s = {
                                               type: "console",
                                               data: {
@@ -349,8 +355,7 @@
                                                   message: i
                                               }
                                           };
-                                          if (a && a.addBehavior(s),
-                                              "error" === n)
+                                          if (a && a.addBehavior(s), "error" === n)
                                               for (var c = 0; c < i.length; c++) {
                                                   var u = i[c];
                                                   u && u.message && u.stack &&
@@ -377,6 +382,7 @@
   }, {
       "../util": 16
   }],
+  // browser/clazz
   3: [function (e, t, n) {
       var r = e("../util"),
           a = e("../reporter"),
@@ -439,6 +445,7 @@
           constructor: f,
           _super: a,
           $a2: function (e) {
+            // debugger
               var t = this;
               if (t.hasReady) return e();
               "complete" === c.readyState ? (t.hasReady = !0, e()) : r.on(s, "load",
@@ -480,6 +487,7 @@
           $ac: function (e) {
               i(e, this.getConfig("imgUrl"))
           },
+          // 图片上报
           $ae: function (e, t) {
               var n = {};
               n[t] = e[t], delete e[t];
@@ -487,6 +495,14 @@
               "object" == typeof e && (a = r.serialize(e)), o(n, this.getConfig("imgUrl") +
                   a + "&post_res=")
           },
+          // 处理pipe
+          // e是数组  [
+          // 将当前页面的 HTML 也作为一个 API 上报
+          //     ['api', '/index.html', true, performance.now, 'SUCCESS'],
+
+          //     // SDK 初始化完成后即开启 SPA 自动解析
+          //     ['setConfig', {enableSPA: true}]
+          // ];
           $ao: function (e) {
               var t = this;
               if (!e || !e.length) return t;
@@ -532,6 +548,7 @@
       "./handler": 6,
       "./hook": 7
   }],
+  // fmp
   4: [function (e, t, n) {
       var r = e("../util"),
           a = 500;
@@ -621,6 +638,7 @@
   }, {
       "../util": 16
   }],
+  // hack
   5: [function (e, t, n) {
       t.exports = function (t, n) {
           var r = e("../util"),
@@ -667,6 +685,7 @@
   }, {
       "../util": 16
   }],
+  // handler
   6: [function (e, t, n) {
       t.exports = function (t, n, r) {
           var a = e("../util"),
@@ -707,6 +726,7 @@
                   }
               },
               g = function (e) {
+                // debugger
                   var t = e._conf.uid || d("_nk_") || d("_bl_uid");
                   if (!t) {
                       t = a.uu();
@@ -721,34 +741,43 @@
               errorHandler: function (e) {
                   if (!e) return this;
                   var t = e.type;
-                  "error" === t ? this.error(e.error || {
-                      message: e.message
-                  }, e) : "unhandledrejection" === t && a.T(e.reason, "Error") && a.$b3(
-                      e.reason) && this.error(e.reason);
+                  "error" === t 
+                    ? this.error(e.error || { message: e.message }, e) 
+                    : "unhandledrejection" === t && a.T(e.reason, "Error") && a.$b3(e.reason) && this.error(e.reason);
                   try {
                       this.getConfig("behavior") && this.reportBehavior && this.reportBehavior()
                   } catch (e) {}
                   return this
               },
+               // * fmp(性能) $ay()
               $ay: function (e) {
                   var t = this;
                   t.$a2(function () {
                       var n = i();
-                      n && (n.page = t.$a7(!0), e && (n = a.ext(n, e)), t.$b4 &&
-                          (n = a.ext(n, t.$b4)), t._lg("perf", n, t.getConfig(
-                              "sample")))
+                      n && 
+                      (
+                        n.page = t.$a7(!0), 
+                        e && (n = a.ext(n, e)), 
+                        t.$b4 && (n = a.ext(n, t.$b4)),
+                        t._lg("perf", n, t.getConfig("sample"))
+                      )
                   })
               },
+              // * 页面资源上报 $b5()
               $b5: function (e) {
                   var t = this;
                   t.$a2(function () {
                       var n = o();
-                      n && (n.load && n.load <= 2e3 || n.load && n.load <= 8e3 &&
-                          Math.random() > .05 || (n.page = t.$a7(!0), n.dl =
-                              location.href, e && (n = a.ext(n, e)), t._lg(
-                                  "res", n, t.getConfig("sample"))))
+                      n 
+                        && (n.load && n.load <= 2e3 
+                          || n.load && n.load <= 8e3 && Math.random() > .05 
+                          || (n.page = t.$a7(!0), 
+                        n.dl = location.href, 
+                        e && (n = a.ext(n, e)), t._lg("res", n, t.getConfig("sample"))))
                   })
               },
+              // 发送pv $av()
+             
               $av: function () {
                   var e = this;
                   e.$a2(function () {
@@ -811,6 +840,7 @@
       "../common/res": 11,
       "../util": 16
   }],
+  // hook
   7: [function (e, t, n) {
       t.exports = function (t, n) {
           var r = e("../util"),
@@ -1061,12 +1091,14 @@
   }, {
       "../util": 16
   }],
+  // constants
   8: [function (e, t, n) {
       n.TIMING_KEYS = ["", "fetchStart", "domainLookupStart", "domainLookupEnd", "connectStart",
           "connectEnd", "requestStart", "responseStart", "responseEnd", "", "domInteractive", "",
           "domContentLoadedEventEnd", "", "loadEventStart", "", "msFirstPaint",
           "secureConnectionStart"]
   }, {}],
+  // /common/perf
   9: [function (e, t, n) {
       var r = e("../util"),
           a = e("./constants").TIMING_KEYS;
@@ -1119,6 +1151,7 @@
       "../util": 16,
       "./constants": 8
   }],
+  // /common/post
   10: [function (e, t, n) {
       var r = e("../util"),
           a = "object" == typeof window ? window : {},
@@ -1135,6 +1168,7 @@
   }, {
       "../util": 16
   }],
+  // /common/res
   11: [function (e, t, n) {
       var r = e("../util"),
           a = e("./constants").TIMING_KEYS;
@@ -1165,10 +1199,12 @@
       "../util": 16,
       "./constants": 8
   }],
+  // sendBeacon
   12: [function (e, t, n) {
       var r = e("../util");
       t.exports = function (e, t) {
           "object" == typeof e && (e = r.serialize(e));
+          console.log(t,e)
           var n = t + e;
           window && window.navigator && "function" == typeof window.navigator.sendBeacon ? window.navigator
               .sendBeacon(n, {}) : r.warn("[arms] navigator.sendBeacon not surported")
@@ -1176,6 +1212,7 @@
   }, {
       "../util": 16
   }],
+  // /common/sender
   13: [function (e, t, n) {
       var r = e("../util"),
           a = "object" == typeof window ? window : {},
@@ -1199,9 +1236,18 @@
   }, {
       "../util": 16
   }],
+  // 入口
   14: [function (e, t, n) {
       "use strict";
 
+      /**
+       * 根据配置发送pv $av()
+       * fmp(性能) $ay()
+       * 页面资源上报 $b5()
+       * @param {*} e  config
+       * @param {*} t  pipe
+       * @returns 实例
+       */
       function r(e, t) {
           var n = a[o] = new i(e);
           n.$ao(t);
@@ -1213,8 +1259,9 @@
           i = a.BrowserLogger = e("./biz.browser/clazz"),
           o = e("./util").key,
           s = "__hasInitBlSdk";
+      // 没有用
       i.singleton = function (e, t) {
-          return a[s] ? a[o] : r(e, t)
+        return a[s] ? a[o] : r(e, t)
       }, i.createExtraInstance = function (e) {
           e && "object" == typeof e && !0 !== e.enableInstanceAutoSend && (e.enableInstanceAutoSend = !
               1);
@@ -1223,6 +1270,7 @@
           return n.enableInstanceAutoSend && (!1 !== n.autoSendPv && t.$av(), n && n.useFmp || t.$ay(),
               n && n.sendResource && t.$b5()), t
       };
+      // 单例 i.bl === 实例
       "object" == typeof window && !!window.navigator && a[o] && (i.bl = function () {
           if (a[s]) return a[o];
           var e = {},
@@ -1233,6 +1281,7 @@
       "./biz.browser/clazz": 3,
       "./util": 16
   }],
+  // reporter
   15: [function (e, t, n) {
       var r = e("./util"),
           a = e("./base"),
@@ -1413,6 +1462,7 @@
       "./base": 1,
       "./util": 16
   }],
+  // util
   16: [function (e, t, n) {
       Date.now = Date.now || function () {
           return (new Date).getTime()
@@ -1569,8 +1619,7 @@
               serialize: function (e) {
                   e = e || {};
                   var t = [];
-                  for (var n in e) Object.prototype.hasOwnProperty.call(e, n) && e[n] !== undefined &&
-                      t.push(n + "=" + this.encode(e[n], "msg" === n));
+                  for (var n in e) Object.prototype.hasOwnProperty.call(e, n) && e[n] !== undefined && t.push(n + "=" + this.encode(e[n], "msg" === n));
                   return t.join("&")
               },
               $bb: function (e, t) {
