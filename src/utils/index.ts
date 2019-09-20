@@ -1,33 +1,35 @@
 import {Config} from '../config'
-import {randomString} from './tools'
+import {randomString, parseHash, } from './tools'
+import { GlobalVal } from '../config/global'
 
 export function getCommonMsg() {
   let u = (navigator as any).connection
   let data: CommonMsg = {
-    guid: randomString(11),
     t: '',
-    page: Config.enableSPA && location.hash ? location.hash.replace('#', '') : location.pathname,
+    page: getPage(),
     times: 1,
     v: Config.appVersion,
     token: Config.token,
     e: Config.environment,
     begin: new Date().getTime(),
     uid: getUid(),
-    sid: getSid(),
-    dt: document.title,
-    dl: location.href,
-    dr: document.referrer,
-    dpr: window.devicePixelRatio,
-    de: document.charset,
+    sid: GlobalVal.sid,
     sr: screen.width + "x" + screen.height,
     vp: getScreen(),
-    ul: getLang(),
     ct: u ? u.effectiveType : '',
+    ul: getLang(),
     _v: '{{VERSION}}',
   }
   return data
 }
 
+// 获取页面
+function getPage(): string {
+  if (GlobalVal.page) return GlobalVal.page
+  else {
+    return location.pathname.toLowerCase()
+  }
+}
 
 // 获取uid
 function getUid(): string {
@@ -41,15 +43,15 @@ function getUid(): string {
 
 // 获得sid
 // TODO: 单页面
-function getSid() {
-  const date = new Date();
-  let sid = sessionStorage.getItem('bombay_sid') || '';
-  if (!sid) {
-      sid = randomString();
-      sessionStorage.setItem('bombay_sid', sid);
-  }
-  return sid;
-}
+// function getSid() {
+//   const date = new Date();
+//   let sid = sessionStorage.getItem('bombay_sid') || '';
+//   if (!sid) {
+//       sid = randomString();
+//       sessionStorage.setItem('bombay_sid', sid);
+//   }
+//   return sid;
+// }
 
 // 获取浏览器默认语言
 function getLang() {

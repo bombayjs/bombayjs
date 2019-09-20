@@ -46,6 +46,8 @@
         enableSPA: true,
         // ajax请求时需要过滤的url信息
         filterUrl: ['/api/v1/report/web', 'livereload.js?snipver=1', '/sockjs-node/info'],
+        // 是否自动上报pv
+        autoSendPv: true,
         // 是否上报页面性能数据
         isPage: true,
         // 是否上报ajax性能数据
@@ -63,15 +65,12 @@
     }
     //# sourceMappingURL=index.js.map
 
-    function randomString(len) {
-        len = len || 10;
-        var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz123456789';
-        var maxPos = $chars.length;
-        var pwd = '';
-        for (var i = 0; i < len; i++) {
-            pwd = pwd + $chars.charAt(Math.floor(Math.random() * maxPos));
-        }
-        return pwd + new Date().getTime();
+    function randomString() {
+        for (var e, t, n = 20, r = new Array(n), a = Date.now().toString(36).split(""); n-- > 0;)
+            t = (e = 36 * Math.random() | 0).toString(36), r[n] = e % 3 ? t : t.toUpperCase();
+        for (var i = 0; i < 8; i++)
+            r.splice(3 * i + 2, 0, a[i]);
+        return r.join("");
     }
     // 将{ method: 'get', state: '200' }转为?method=get&state=200
     function serialize(obj) {
@@ -82,33 +81,89 @@
             }
         return str.join("&");
     }
+    function each(data, fn) {
+        var n = 0, r = data.length;
+        if (isTypeOf(data, 'Array'))
+            for (; n < r && !1 !== fn.call(data[n], data[n], n); n++)
+                ;
+        else
+            for (var m in data)
+                if (!1 === fn.call(data[m], data[m], m))
+                    break;
+        return data;
+    }
+    /**
+     * 是否是某类型
+     *
+     * @export
+     * @param {*} data
+     * @param {*} type
+     * @returns 有type就返回true/false,没有就返回对于类型
+     */
+    function isTypeOf(data, type) {
+        var n = Object.prototype.toString.call(data).substring(8).replace("]", "");
+        return type ? n === type : n;
+    }
+    var on = function (event, fn, remove) {
+        window.addEventListener ? window.addEventListener(event, function a(i) {
+            remove && window.removeEventListener(event, a, !1), fn.call(this, i);
+        }, !1) : window.attachEvent && window.attachEvent("on" + event, function i(a) {
+            remove && window.detachEvent("on" + event, i), fn.call(this, a);
+        });
+    };
+    var off = function (event, fn) {
+        return fn ? (window.removeEventListener ? window.removeEventListener(event, fn) : window.detachEvent &&
+            window.detachEvent(event, fn), this) : this;
+    };
+    var parseHash = function (e) {
+        return (e ? parseUrl(e.replace(/^#\/?/, "")) : "") || "[index]";
+    };
+    var parseUrl = function (e) {
+        return e && "string" == typeof e ? e.replace(/^(https?:)?\/\//, "").replace(/\?.*$/, "") : "";
+    };
     //# sourceMappingURL=tools.js.map
+
+    // 默认参数
+    var GlobalVal = {
+        page: '',
+        sid: '',
+        sBegin: Date.now(),
+    };
+    function setGlobalPage(page) {
+        GlobalVal.page = page;
+    }
+    function setGlobalSid() {
+        GlobalVal.sid = randomString();
+        GlobalVal.sBegin = Date.now();
+    }
 
     function getCommonMsg() {
         var u = navigator.connection;
         var data = {
-            guid: randomString(11),
             t: '',
-            page: Config.enableSPA && location.hash ? location.hash.replace('#', '') : location.pathname,
+            page: getPage(),
             times: 1,
             v: Config.appVersion,
             token: Config.token,
             e: Config.environment,
             begin: new Date().getTime(),
             uid: getUid(),
-            sid: getSid(),
-            dt: document.title,
-            dl: location.href,
-            dr: document.referrer,
-            dpr: window.devicePixelRatio,
-            de: document.charset,
+            sid: GlobalVal.sid,
             sr: screen.width + "x" + screen.height,
             vp: getScreen(),
-            ul: getLang(),
             ct: u ? u.effectiveType : '',
+            ul: getLang(),
             _v: '1.0.2',
         };
         return data;
+    }
+    // 获取页面
+    function getPage() {
+        if (GlobalVal.page)
+            return GlobalVal.page;
+        else {
+            return location.pathname.toLowerCase();
+        }
     }
     // 获取uid
     function getUid() {
@@ -121,14 +176,15 @@
     }
     // 获得sid
     // TODO: 单页面
-    function getSid() {
-        var sid = sessionStorage.getItem('bombay_sid') || '';
-        if (!sid) {
-            sid = randomString();
-            sessionStorage.setItem('bombay_sid', sid);
-        }
-        return sid;
-    }
+    // function getSid() {
+    //   const date = new Date();
+    //   let sid = sessionStorage.getItem('bombay_sid') || '';
+    //   if (!sid) {
+    //       sid = randomString();
+    //       sessionStorage.setItem('bombay_sid', sid);
+    //   }
+    //   return sid;
+    // }
     // 获取浏览器默认语言
     function getLang() {
         var lang = navigator.language || navigator.userLanguage; //常规浏览器语言和IE浏览器
@@ -140,8 +196,95 @@
         var h = document.documentElement.clientHeight || document.body.clientHeight;
         return w + 'x' + h;
     }
-    //# sourceMappingURL=index.js.map
 
+    // 上报
+    function report(msg) {
+        new Image().src = Config.reportUrl + "?" + serialize(msg);
+    }
+    //# sourceMappingURL=reporter.js.map
+
+    // 处理pv
+    function handlePv() {
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, {
+            t: 'pv',
+            dt: document.title,
+            dl: location.href,
+            dr: document.referrer,
+            dpr: window.devicePixelRatio,
+            de: document.charset,
+        });
+        report(msg);
+    }
+    var TIMING_KEYS = ["", "fetchStart", "domainLookupStart", "domainLookupEnd", "connectStart",
+        "connectEnd", "requestStart", "responseStart", "responseEnd", "", "domInteractive", "",
+        "domContentLoadedEventEnd", "", "loadEventStart", "", "msFirstPaint",
+        "secureConnectionStart"];
+    // 处理性能
+    function handlePerf() {
+        var performance = window.performance;
+        if (!performance || 'object' !== typeof performance)
+            return;
+        var data = {}, timing = performance.timing || {}, now = Date.now(), type = 1;
+        // 根据PerformanceNavigationTiming计算更准确
+        if ("function" == typeof window.PerformanceNavigationTiming) {
+            var c = performance.getEntriesByType("navigation")[0];
+            c && (timing = c, type = 2);
+        }
+        // 计算data
+        each({
+            dns: [3, 2],
+            tcp: [5, 4],
+            ssl: [5, 17],
+            ttfb: [7, 6],
+            trans: [8, 7],
+            dom: [10, 8],
+            res: [14, 12],
+            firstbyte: [7, 2],
+            fpt: [8, 1],
+            tti: [10, 1],
+            ready: [12, 1],
+            load: [14, 1]
+        }, function (e, t) {
+            var r = timing[TIMING_KEYS[e[1]]], o = timing[TIMING_KEYS[e[0]]];
+            if (2 === type || r > 0 && o > 0) {
+                var c = Math.round(o - r);
+                c >= 0 && c < 36e5 && (data[t] = c);
+            }
+        });
+        var u = window.navigator.connection, f = performance.navigation || { type: undefined };
+        data.ct = u ? u.effectiveType || u.type : "";
+        var l = u ? u.downlink || u.downlinkMax || u.bandwidth || null : null;
+        if ((l = l > 999 ? 999 : l) && (data.bandwidth = l), data.navtype = 1 === f.type ? "Reload" : "Other", 1 === type && timing[TIMING_KEYS[16]] > 0 && timing[TIMING_KEYS[1]] > 0) {
+            var h = timing[TIMING_KEYS[16]] - timing[TIMING_KEYS[1]];
+            h >= 0 && h < 36e5 && (data.fpt = h);
+        }
+        1 === type && timing[TIMING_KEYS[1]] > 0
+            ? data.begin = timing[TIMING_KEYS[1]]
+            : 2 === type && data.load > 0 ? data.begin = now -
+                data.load : data.begin = now;
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, { t: 'perf' }, data);
+        report(msg);
+    }
+    // 处理hash变化
+    function handleHashchange(e) {
+        debugger;
+        var page = parseHash(location.hash);
+        page && setPage(page);
+    }
+    // 处理hash变化
+    function handleHistorystatechange(e) {
+        debugger;
+        var page = parseHash(e.detail);
+        page && setPage(page);
+    }
+    function setPage(page) {
+        setGlobalPage(page);
+        setGlobalSid();
+        handlePv();
+    }
+    // 处理错误
     function handleErr(error) {
         switch (error.type) {
             case 'error':
@@ -154,10 +297,6 @@
             //     reportHttpError(error)
             //   break;
         }
-    }
-    // 上报错误
-    function report(msg) {
-        new Image().src = Config.reportUrl + "?" + serialize(msg);
     }
     // 捕获js异常
     function reportCaughtError(error) {
@@ -208,30 +347,50 @@
                 return;
             }
             setConfig(options);
+            Config.autoSendPv && this.sendPv();
+            Config.isPage && this.sendPerf();
+            Config.enableSPA && this.addListenRouterChange();
             Config.isError && this.addListenJs();
             Config.isAjax && this.addListenAjax();
             Config.isRecord && this.addRrweb();
         };
+        Bombay.prototype.sendPv = function () {
+            handlePv();
+        };
+        Bombay.prototype.sendPerf = function () {
+            handlePerf();
+        };
+        // 监听路由
+        Bombay.prototype.addListenRouterChange = function () {
+            on('hashchange', handleHashchange);
+            on('historystatechange', handleHistorystatechange);
+        };
         Bombay.prototype.addListenJs = function () {
             // js错误或静态资源加载错误
-            window.addEventListener("error", handleErr, true);
+            on('error', handleErr);
             //promise错误
-            window.addEventListener("unhandledrejection", handleErr);
+            on('unhandledrejection', handleErr);
             // window.addEventListener('rejectionhandled', rejectionhandled, true);
         };
         Bombay.prototype.addListenAjax = function () {
         };
         Bombay.prototype.addRrweb = function () {
         };
+        // 移除路由
+        Bombay.prototype.removeListenRouterChange = function () {
+            off('hashchange', handleHashchange);
+            off('historystatechange', handleHistorystatechange);
+        };
         Bombay.prototype.removeListenJs = function () {
-            window.removeEventListener("error", handleErr, true);
-            window.removeEventListener("unhandledrejection", handleErr);
+            off('error', handleErr);
+            off('unhandledrejection', handleErr);
         };
         Bombay.prototype.removeListenAjax = function () {
         };
         Bombay.prototype.removeRrweb = function () {
         };
         Bombay.prototype.destroy = function () {
+            Config.enableSPA && this.removeListenRouterChange();
             Config.isError && this.removeListenJs();
             Config.isAjax && this.removeListenAjax();
             Config.isRecord && this.removeRrweb();

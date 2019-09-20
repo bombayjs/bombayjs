@@ -14,29 +14,30 @@ type ErrorData = ErrorMsg | ResourceMsg | ApiMsg | PromiseMsg | pvMsg | healthMs
 type MsgType = '' | 'error' | 'resource' | 'api' | 'promise' | 'pv' | 'health' | 'perf'
 
 interface CommonMsg{
-  guid: string // 唯一标识
   t: MsgType // 类型
-  page: string // 页面
   times?: number // 次数
+  page: string // 页面
   v: string // 版本
-  token: string // 项目id
   e: string // 开发生产环境
+  token: string // 项目id
   begin: number // 开始时间戳
+  sr: string // 屏幕分辨率
+  vp: string // view 分辨率
+  _v: string // 脚本sdk版本
   uid: string // user id
   sid: string // session id
+  ct: string // 网络
+  ul: string // 语言
+}
+
+// pv上报
+interface pvMsg extends CommonMsg{
   dt: string // document title
   dl: string // document location
   dr: string // 来源
   dpr: number // dpr
   de: string // document 编码
-  sr: string // 屏幕分辨率
-  vp: string // view 分辨率
-  ul: string // 语言
-  ct: string // 网络
-  _v: string // 脚本sdk版本
-
 }
-
 interface ErrorMsg extends CommonMsg{
   cate:string // 类别
   msg:string // 信息
@@ -69,10 +70,6 @@ interface ApiMsg extends CommonMsg{
   response:string
 }
 
-// pv上报
-interface pvMsg extends CommonMsg{
-  
-}
 
 // 健康检查上报
 interface healthMsg extends CommonMsg{
@@ -85,19 +82,19 @@ interface healthMsg extends CommonMsg{
 
 // 页面性能上报
 interface perfMsg extends CommonMsg{
-  dns: number
-  tcp: number // 停留时间
-  ssl: number // 停留时间
-  ttfb: number // 停留时间
+  dns: number // dns时间
+  tcp: number // tcp时间
+  ssl: number // ssl时间
+  ttfb: number // ResponseStart - RequestStart (首包时间，关注网络链路耗时)
   trans: number // 停留时间
-  dom: number // 停留时间
+  dom: number // dom解析时间
   res: number // 停留时间
-  firstbyte: number // 停留时间
-  fpt: number // 停留时间
-  tti: number // 停留时间
-  ready: number // 停留时间
-  load: number // 停留时间
-  bandwidth: number // 停留时间
+  firstbyte: number // 首字节时间
+  fpt: number // ResponseEnd - FetchStart （首次渲染时间 / 白屏时间）
+  tti: number // DomInteractive - FetchStart （首次可交付时间）
+  ready: number // DomContentLoadEventEnd - FetchStart （加载完成时间）
+  load: number // LoadEventStart - FetchStart （页面完全加载时间）
+  bandwidth: number // 估计的带宽 单位M/s
   navtype: string // nav方式 如reload
   fmp: number // 停留时间
 }

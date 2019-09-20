@@ -60,6 +60,7 @@
               e && "object" == typeof e && (r.$a9(e), e = this.$aa(e), this._conf = r.ext({},
                   this._conf, e))
           },
+          // 校验imgUrl参数
           $aa: function (e) {
               var t = e.region,
                   n = e.imgUrl;
@@ -91,6 +92,7 @@
           setCommonInfo: function (e) {
               e && "object" == typeof e && (this._common = r.ext({}, this._common, e))
           },
+          // 修改session
           $a6: function () {
               this.session = r.uu(), this.sBegin = Date.now()
           },
@@ -115,6 +117,7 @@
               return 1 === e || ("boolean" == typeof this.$a5[e] ? this.$a5[e] : (this.$a5[e] =
                   r.pick(e), this.$a5[e]))
           },
+          // 上报
           $a4: function () {
               var e;
               clearTimeout(this.$a3), this.$a3 = null;
@@ -276,6 +279,7 @@
                           },
                           n = t.onpopstate;
                       t.onpopstate = function () {
+                        debugger
                           for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++) a[
                               o] = arguments[o];
                           var s = t.location.href;
@@ -391,20 +395,28 @@
           s = r.win,
           c = s.document,
           u = /^(error|api|speed|sum|avg|percent|custom|msg|setPage|setConfig|behavior|performance)$/,
+          // e: config
           f = function (e) {
+            // debugger
               var t = this;
-              return a.call(t, e), t._initialPage = e.page && r.$a8(e.page, [], e.page + "") || null, t._health = {
+              return a.call(t, e)
+              , t._initialPage = e.page && r.$a8(e.page, [], e.page + "") || null
+              , t._health = {
                   errcount: 0,
                   apisucc: 0,
                   apifail: 0
-              }, t.$ak = function (e, n) {
+              }
+              , t.$ak = function (e, n) {
+                // 健康检查
                   "error" === e ? t._health.errcount++ : "api" === e && t._health[n.success ?
                       "apisucc" : "apifail"]++
-              }, !1 !== e.enableInstanceAutoSend && (t.$al(), t.$am(), t.$an(1e4), t._conf && t._conf
-                  .behavior && t.$aj()), Object.defineProperty && s.addEventListener && Object.defineProperty(
-                  t, "pipe", {
-                      set: t.$ao
-                  }), t
+              }
+              , !1 !== e.enableInstanceAutoSend && (t.$al(), t.$am(), t.$an(1e4), t._conf && t._conf.behavior && t.$aj())
+              , Object.defineProperty && s.addEventListener && Object.defineProperty(
+                t, "pipe", {
+                    set: t.$ao
+                })
+              , t
           };
       f.prototype = r.$ap(a.prototype), r.ext(a._root.dftCon, {
           uid: null,
@@ -652,6 +664,7 @@
                       .dispatchEvent(r)
               },
               s = function (e) {
+                debugger
                   var t = a[e];
                   "function" == typeof t && (a[e] = function (n, i, s) {
                       var c = 1 === arguments.length ? [arguments[0]] : Array.apply(null,
@@ -802,6 +815,7 @@
               $af: function () {
                   return h.uid = g(this), h
               },
+              // 上报速度
               $au: function (e) {
                   var t = Date.now();
                   if (t - this._lastUnload < 200) return this;
@@ -817,9 +831,13 @@
                   }, t.$b9 = function (e) {
                       var n = t._conf.parseHash(e.detail);
                       n && t.setPage(n)
-                  }, a.on(n, "hashchange", t.$b8), a.on(n, "historystatechange",
-                      t.$b9), t.$b8(!1)) : (a.off(n, "hashchange", t.$b8), a.off(n,
-                      "historystatechange", t.$b9), t.$b8 = null, t.$b9 = null)
+                  }
+                  , a.on(n, "hashchange", t.$b8)
+                  , a.on(n, "historystatechange",t.$b9)
+                  , t.$b8(!1)) 
+                  : (a.off(n, "hashchange", t.$b8)
+                  , a.off(n, "historystatechange", t.$b9)
+                  , t.$b8 = null, t.$b9 = null)
               },
               $al: function () {
                   var e = this;
@@ -1103,6 +1121,7 @@
       var r = e("../util"),
           a = e("./constants").TIMING_KEYS;
       t.exports = function () {
+        // debugger
           var e = r.win || {},
               t = e.performance;
           if (!t || "object" != typeof t) return null;
@@ -1144,7 +1163,9 @@
               var h = i[a[16]] - i[a[1]];
               h >= 0 && h < 36e5 && (n.fpt = h)
           }
-          return 1 === s && i[a[1]] > 0 ? n.begin = i[a[1]] : 2 === s && n.load > 0 ? n.begin = o -
+          return 1 === s && i[a[1]] > 0 
+          ? n.begin = i[a[1]] 
+          : 2 === s && n.load > 0 ? n.begin = o -
               n.load : n.begin = o, n
       }
   }, {
@@ -1296,6 +1317,7 @@
                   key: n[0]
               }, t)
           },
+          // e: config
           s = function (e) {
               a.call(this, e);
               var t;
@@ -1557,6 +1579,7 @@
               pick: function (e) {
                   return 1 === e || 1 === Math.ceil(Math.random() * e)
               },
+              // 校验sample,只能是1-100
               $a9: function (e) {
                   if ("sample" in e) {
                       var t = e.sample,
@@ -1630,6 +1653,7 @@
               $b3: function (e) {
                   return !(!e || !e.message) && !/failed[\w\s]+fetch/i.test(e.message)
               },
+              // parse url
               $ar: function (e) {
                   return e && "string" == typeof e ? e.replace(/^(https?:)?\/\//, "").replace(
                       /\?.*$/, "") : ""

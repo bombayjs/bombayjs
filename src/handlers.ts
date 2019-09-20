@@ -1,7 +1,112 @@
 import { Config, } from './config'
-import { queryString, serialize } from './utils/tools'
+import { queryString, serialize, each, parseHash } from './utils/tools'
 import { getCommonMsg } from './utils/index'
+import { report } from './reporter'
+import { setGlobalPage, setGlobalSid, } from './config/global'
 
+// 处理pv
+export function handlePv(): void {
+  let commonMsg = getCommonMsg()
+  let msg: pvMsg = {
+    ...commonMsg,
+    ...{
+      t: 'pv',
+      dt: document.title,
+      dl: location.href,
+      dr: document.referrer,
+      dpr: window.devicePixelRatio,
+      de: document.charset,
+    }
+  }
+  report(msg)
+}
+
+const TIMING_KEYS = ["", "fetchStart", "domainLookupStart", "domainLookupEnd", "connectStart",
+  "connectEnd", "requestStart", "responseStart", "responseEnd", "", "domInteractive", "",
+  "domContentLoadedEventEnd", "", "loadEventStart", "", "msFirstPaint",
+  "secureConnectionStart"]
+
+// 处理性能
+export function handlePerf(): void {
+  const performance = window.performance
+  if (!performance || 'object' !== typeof performance) return
+
+  let data: any = {},
+    timing = performance.timing || {},
+    now = Date.now(),
+    type = 1;
+
+  // 根据PerformanceNavigationTiming计算更准确
+  if ("function" == typeof window.PerformanceNavigationTiming) {
+      var c = performance.getEntriesByType("navigation")[0];
+      c && (timing = c, type = 2)
+  }
+
+  // 计算data
+  each({
+    dns: [3, 2],
+    tcp: [5, 4],
+    ssl: [5, 17],
+    ttfb: [7, 6],
+    trans: [8, 7],
+    dom: [10, 8],
+    res: [14, 12],
+    firstbyte: [7, 2],
+    fpt: [8, 1],
+    tti: [10, 1],
+    ready: [12, 1],
+    load: [14, 1]
+  }, function (e, t) {
+      var r = timing[TIMING_KEYS[e[1]]],
+          o = timing[TIMING_KEYS[e[0]]];
+      if (2 === type || r > 0 && o > 0) {
+          var c = Math.round(o - r);
+          c >= 0 && c < 36e5 && (data[t] = c)
+      }
+  });
+
+  var u = window.navigator.connection,
+      f = performance.navigation || { type: undefined };
+  data.ct = u ? u.effectiveType || u.type : "";
+  var l = u ? u.downlink || u.downlinkMax || u.bandwidth || null : null;
+  if ((l = l > 999 ? 999 : l) && (data.bandwidth = l), data.navtype = 1 === f.type ? "Reload" :"Other", 1 === type && timing[TIMING_KEYS[16]] > 0 && timing[TIMING_KEYS[1]] > 0) {
+      var h = timing[TIMING_KEYS[16]] - timing[TIMING_KEYS[1]];
+      h >= 0 && h < 36e5 && (data.fpt = h)
+  }
+  1 === type && timing[TIMING_KEYS[1]] > 0 
+        ? data.begin = timing[TIMING_KEYS[1]] 
+        : 2 === type && data.load > 0 ? data.begin = now -
+        data.load : data.begin = now
+  let commonMsg = getCommonMsg()
+  let msg: perfMsg = {
+    ...commonMsg,
+    t: 'perf',
+    ...data,
+  }
+  report(msg)
+}
+
+// 处理hash变化
+export function handleHashchange(e): void {
+  debugger
+  const page = parseHash(location.hash)
+  page && setPage(page)
+}
+
+// 处理hash变化
+export function handleHistorystatechange(e): void {
+  debugger
+  const page = parseHash(e.detail)
+  page && setPage(page)
+}
+
+function setPage(page: string) {
+  setGlobalPage(page)
+  setGlobalSid()
+  handlePv()
+}
+
+// 处理错误
 export function handleErr(error): void {
   switch (error.type) {
     case 'error':
@@ -14,11 +119,6 @@ export function handleErr(error): void {
     //     reportHttpError(error)
     //   break;
   }
-}
-
-// 上报错误
-function report(msg:any) {
-  new Image().src = `${Config.reportUrl}?${serialize(msg)}`
 }
 
 // 捕获js异常
@@ -94,10 +194,5 @@ function reportHttpError(msg:CommonMsg,data:any):void{
   // new Image().src = `${Config.reportUrl}?commit=${queryString(msg)}`
 }
 
-// 上报pv
-function reportPv(): void {
-  let commonMsg = getCommonMsg()
-  report(commonMsg)
-}
 
 

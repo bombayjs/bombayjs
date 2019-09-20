@@ -1,5 +1,6 @@
 import { Config, setConfig } from './config'
-import { handleErr } from './handlers'
+import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange,  } from './handlers'
+import {on,off} from './utils/tools'
 
 export default class Bombay {
   config: ConfigParams
@@ -16,16 +17,35 @@ export default class Bombay {
       return
     }
     setConfig(options)
+    Config.autoSendPv && this.sendPv();
+    Config.isPage && this.sendPerf();
+
+    Config.enableSPA && this.addListenRouterChange();
     Config.isError && this.addListenJs();
     Config.isAjax && this.addListenAjax();
     Config.isRecord && this.addRrweb();
   }
 
+  sendPv() {
+    handlePv()
+  }
+
+  sendPerf() {
+    handlePerf()
+  }
+
+  // 监听路由
+  addListenRouterChange() {
+    on('hashchange', handleHashchange)
+    on('historystatechange', handleHistorystatechange)
+    
+  }
+
   addListenJs() {
     // js错误或静态资源加载错误
-    window.addEventListener("error", handleErr, true);
+    on('error', handleErr)
     //promise错误
-    window.addEventListener("unhandledrejection", handleErr);
+    on('unhandledrejection', handleErr)
     // window.addEventListener('rejectionhandled', rejectionhandled, true);
     
   }
@@ -38,9 +58,16 @@ export default class Bombay {
 
   }
 
+  // 移除路由
+  removeListenRouterChange() {
+    off('hashchange', handleHashchange)
+    off('historystatechange', handleHistorystatechange)
+    
+  }
+
   removeListenJs() {
-    window.removeEventListener("error", handleErr, true);
-    window.removeEventListener("unhandledrejection", handleErr);
+    off('error', handleErr)
+    off('unhandledrejection', handleErr)
   }
 
   removeListenAjax() {
@@ -52,6 +79,7 @@ export default class Bombay {
   }
 
   destroy() {
+    Config.enableSPA && this.removeListenRouterChange();
     Config.isError && this.removeListenJs()
     Config.isAjax && this.removeListenAjax()
     Config.isRecord && this.removeRrweb()
