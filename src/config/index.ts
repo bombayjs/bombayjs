@@ -12,8 +12,6 @@ export let Config = {
   outtime: 300,
   // 开启单页面？
   enableSPA: true,
-  // ajax请求时需要过滤的url信息
-  filterUrl: ['/api/v1/report/web', 'livereload.js?snipver=1', '/sockjs-node/info'],
   // 是否自动上报pv
   autoSendPv: true,
   // 是否上报页面性能数据
@@ -26,6 +24,17 @@ export let Config = {
   isError: true,
   // 是否录屏
   isRecord: true,
+  // 是否上报行为
+  isBehavior: true,
+  ignore: {
+    ignoreErrors: [],
+    ignoreUrls: [],
+    ignoreApis: ['/api/v1/report/web', 'livereload.js?snipver=1', '/sockjs-node/info'],
+  },
+  behavior: {
+    console: true,
+    click: true,
+  }
 }
 
 // 设置参数

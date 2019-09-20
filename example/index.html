@@ -50,14 +50,15 @@
 //     }, 1000);
   </script>
   <!-- <a href='#a'>a</a> -->
-  <button onclick="C()">aaa</button>
+  <button id="#btn" onclick="C()">aaa</button>
   <script>
     function C() {
-      let stateObj = {
-        foo: "bar",
-        };
+      // let stateObj = {
+      //   foo: "bar",
+      //   };
 
-        history.pushState(stateObj, "page 2", "bar.html");
+      //   history.pushState(stateObj, "page 2", "bar.html");
+      console.log('a', 'b')
     }
   </script>
 </body>

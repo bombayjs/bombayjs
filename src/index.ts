@@ -1,7 +1,7 @@
 import { Config, setConfig } from './config'
-import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange,  } from './handlers'
+import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, } from './handlers'
 import {on,off} from './utils/tools'
-import { hackState } from './hack'
+import { hackState, hackConsole } from './hack'
 
 export default class Bombay {
   config: ConfigParams
@@ -25,6 +25,8 @@ export default class Bombay {
     Config.isError && this.addListenJs();
     Config.isAjax && this.addListenAjax();
     Config.isRecord && this.addRrweb();
+    // 行为是一个页面内的操作
+    Config.isBehavior && this.addListenBehavior()
   }
 
   sendPv() {
@@ -33,6 +35,18 @@ export default class Bombay {
 
   sendPerf() {
     handlePerf()
+  }
+
+  // 监听行为
+  addListenBehavior() {
+    Config.behavior.console && hackConsole()
+    Config.behavior.click && this.addListenClick()
+  }
+
+  // 监听click
+  addListenClick() {
+    on('click', handleClick);
+    on('keypress', handleClick);
   }
 
   // 监听路由

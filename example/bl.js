@@ -131,6 +131,7 @@
               return this
           },
           // 上报
+          // e: 类型  t: 内容 n: 立即上报？
           _lg: function (e, t, n) {
               var a = this._conf,
                   i = this.$a7(),
@@ -138,10 +139,16 @@
                   s = o.ignoreErrors,
                   c = o.ignoreUrls,
                   u = o.ignoreApis;
-              return r.$ah(i, c) || r.$ah(r.decode(i), c) ? this : "error" === e && (r.$ah(t.msg,
-                      s) || r.$ah(r.decode(t.msg), s)) ? this : "api" === e && (r.$ah(t.api, u) ||
-                      r.$ah(r.decode(t.api), u)) ? this : this.$ab(a.imgUrl) && t && !a.disabled &&
-                  a.pid ? n && !this.$ag(n) ? this : (t = r.ext({
+              return r.$ah(i, c) || r.$ah(r.decode(i), c) 
+                ? this 
+                : "error" === e && (r.$ah(t.msg, s) || r.$ah(r.decode(t.msg), s)) 
+                ? this 
+                : "api" === e && (r.$ah(t.api, u) || r.$ah(r.decode(t.api), u)) 
+                ? this 
+                : this.$ab(a.imgUrl) && t && !a.disabled && a.pid 
+                ? n && !this.$ag(n) 
+                ? this 
+                : (t = r.ext({
                       t: e,
                       times: 1,
                       page: i,
@@ -178,7 +185,8 @@
                           }
                           n.times++
                       }
-                  }(this, t)) : this
+                  }(this, t)) 
+                  : this
           },
           // 用户自定义上报
           custom: function (e, t) {
@@ -226,6 +234,7 @@
               },
               l = function (e, t) {
                   return function (n) {
+                    debugger
                       if (n && n !== c) {
                           c = n;
                           var r;
@@ -279,7 +288,7 @@
                           },
                           n = t.onpopstate;
                       t.onpopstate = function () {
-                        debugger
+                        // debugger
                           for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++) a[
                               o] = arguments[o];
                           var s = t.location.href;
@@ -351,7 +360,7 @@
                                   u(t.console, r, function (e) {
                                       var n = r;
                                       return function () {
-                                          for (var r = arguments.length, i = new Array(r), o = 0; o < r; o++)
+                                    for (var r = arguments.length, i = new Array(r), o = 0; o < r; o++)
                                           i[o] = arguments[o];
                                           var s = {
                                               type: "console",
@@ -372,15 +381,22 @@
                                                                       .message
                                                               }))
                                               }
+
                                           e && Function.prototype.apply.call(
                                               e, t.console, i)
                                       }
                                   })
                               }
-                      }(), t && t.document && t.document.addEventListener && (t.document
-                          .addEventListener("click", l("click"), !1), t.document.addEventListener(
-                              "keypress", l("keypress"), !1)), h(), a = this, this.hasInitBehavior = !
-                      0), this
+                      }(), t && t.document && t.document.addEventListener && 
+                      (
+                        t.document.addEventListener("click", l("click"), !1)
+                        , t.document.addEventListener("keypress", l("keypress"), !1)
+                      )
+                      , h()
+                      , a = this
+                      , this.hasInitBehavior = !0
+                    )
+                    , this
               }
           })
       }
@@ -665,7 +681,6 @@
                       .dispatchEvent(r)
               },
               s = function (e) {
-                debugger
                   var t = a[e];
                   "function" == typeof t && (a[e] = function (n, i, s) {
                       var c = 1 === arguments.length ? [arguments[0]] : Array.apply(null,

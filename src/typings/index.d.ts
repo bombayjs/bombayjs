@@ -6,12 +6,12 @@ interface ConfigParams {
 
 interface Records {
   type:string
-  data: ErrorData
+  data: ReportData
 }
 
-type ErrorData = ErrorMsg | ResourceMsg | ApiMsg | PromiseMsg | pvMsg | healthMsg | perfMsg
+type ReportData = ErrorMsg | ResourceMsg | ApiMsg | PromiseMsg | pvMsg | healthMsg | perfMsg | behaviorMsg
 
-type MsgType = '' | 'error' | 'resource' | 'api' | 'promise' | 'pv' | 'health' | 'perf'
+type MsgType = '' | 'error' | 'resource' | 'api' | 'promise' | 'pv' | 'health' | 'perf' | 'behavior'
 
 interface CommonMsg{
   t: MsgType // 类型
@@ -99,4 +99,36 @@ interface perfMsg extends CommonMsg{
   fmp: number // 停留时间
 }
 
+// 行为上报
+interface behaviorMsg extends CommonMsg{
+  behavior: Behavior
+}
+
 // 手动上报 tag: string // 标签
+
+
+type Behavior = navigationBehavior | consoleBehavior | clickBehavior;
+
+
+interface navigationBehavior {
+  type: 'navigation',
+  data: {
+    from: string,
+    to: string,
+  },
+}
+
+interface consoleBehavior {
+  type: 'console',
+  data: {
+    level: string,
+    message: string,
+  },
+}
+
+interface clickBehavior {
+  type: 'ui.click',
+  data: {
+    message: string,
+  },
+}

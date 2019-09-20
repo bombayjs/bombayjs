@@ -1,8 +1,29 @@
 import { parseUrl, fnToString, warn, dispatchCustomEvent, } from './utils/tools'
+import { handleBehavior } from './handlers'
 
 // hack console
 export function hackConsole() {
-
+  if (window && window.console) {
+    for (var e = ["debug", "info", "warn", "log", "error"], n = 0; e.length; n++) {
+      var r = e[n];
+      var action = window.console[r]
+      if (!window.console[r]) return;
+        (function (r, action) {
+          window.console[r] = function() {
+            var i = Array.prototype.slice.apply(arguments)
+            var s: consoleBehavior = {
+              type: "console",
+              data: {
+                level: r,
+                message: JSON.stringify(i),
+              }
+            };
+            handleBehavior(s)
+            action && action.apply(null, i)
+          }
+        })(r, action)
+    }
+  }
 }
 
 // hack ajax
@@ -38,5 +59,5 @@ export function hackState(e: 'pushState' | 'replaceState') {
       warn("[retcode] error in " + e + ": " + m)
     }
     return f
-}, history[e].toString = fnToString(e))
+  }, history[e].toString = fnToString(e))
 }

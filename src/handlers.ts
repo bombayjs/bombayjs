@@ -21,6 +21,63 @@ export function handlePv(): void {
   report(msg)
 }
 
+// 处理html node
+const normalTarget = function (e) {
+  var t, n, r, a, i, o = [];
+  if (!e || !e.tagName) return "";
+  if (o.push(e.tagName.toLowerCase()), e.id && o.push("#".concat(e.id)), (t = e.className) &&
+      "[object String]" === Object.prototype.toString.call(t))
+      for (n = t.split(/\s+/), i = 0; i < n.length; i++) o.push(".".concat(n[i]));
+  var s = ["type", "name", "title", "alt"];
+  for (i = 0; i < s.length; i++) r = s[i], (a = e.getAttribute(r)) && o.push("[".concat(
+      r, '="').concat(a, '"]'));
+  return o.join("")
+}
+
+export function handleClick(event) {
+  var target;
+  try {
+    target = event.target
+  } catch (u) {
+    target = "<unknown>"
+  }
+  if (0 !== target.length) {
+    var behavior: clickBehavior = {
+      type: 'ui.click',
+      data: {
+        message: function (e) {
+          debugger
+          if (!e || 1 !== e.nodeType) return "";
+          for (var t = e || null, n = [], r = 0, a = 0,i = " > ".length, o = ""; t && r++ < 5 &&!("html" === (o = normalTarget(t)) || r > 1 && a + n.length * i + o.length >= 80);) 
+          n.push(o), a += o.length, t = t.parentNode;
+          return n.reverse().join(" > ")
+      }(target),
+      }
+    }
+    let commonMsg = getCommonMsg()
+    let msg: behaviorMsg = {
+      ...commonMsg,
+      ...{
+        t: 'behavior',
+        behavior,
+      }
+    }
+    report(msg)
+  }
+}
+
+export function handleBehavior(behavior: Behavior): void {
+  let commonMsg = getCommonMsg()
+  let msg: behaviorMsg = {
+    ...commonMsg,
+    ...{
+      t: 'behavior',
+      behavior,
+    }
+  }
+  report(msg)
+}
+
 const TIMING_KEYS = ["", "fetchStart", "domainLookupStart", "domainLookupEnd", "connectStart",
   "connectEnd", "requestStart", "responseStart", "responseEnd", "", "domInteractive", "",
   "domContentLoadedEventEnd", "", "loadEventStart", "", "msFirstPaint",

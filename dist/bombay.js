@@ -44,8 +44,6 @@
         outtime: 300,
         // 开启单页面？
         enableSPA: true,
-        // ajax请求时需要过滤的url信息
-        filterUrl: ['/api/v1/report/web', 'livereload.js?snipver=1', '/sockjs-node/info'],
         // 是否自动上报pv
         autoSendPv: true,
         // 是否上报页面性能数据
@@ -58,6 +56,17 @@
         isError: true,
         // 是否录屏
         isRecord: true,
+        // 是否上报行为
+        isBehavior: true,
+        ignore: {
+            ignoreErrors: [],
+            ignoreUrls: [],
+            ignoreApis: ['/api/v1/report/web', 'livereload.js?snipver=1', '/sockjs-node/info'],
+        },
+        behavior: {
+            console: true,
+            click: true,
+        }
     };
     // 设置参数
     function setConfig(options) {
@@ -151,6 +160,7 @@
             : ((r = window.document.createEvent("HTMLEvents")).initEvent(e, !1, !0), r.detail = t);
         window.dispatchEvent(r);
     };
+    //# sourceMappingURL=tools.js.map
 
     // 默认参数
     var GlobalVal = {
@@ -229,8 +239,47 @@
     //# sourceMappingURL=index.js.map
 
     // 上报
-    function report(msg) {
-        new Image().src = Config.reportUrl + "?" + serialize(msg);
+    function report(e) {
+        "resource" === e.t ?
+            send(e)
+            : "error" === e.t ? send(e)
+                : "behavior" === e.t ? send(e)
+                    : "health" === e.t && window && window.navigator && "function" == typeof window.navigator.sendBeacon ? sendBeacon(e)
+                        : send(e);
+        return this;
+    }
+    // img上报
+    function send(msg) {
+        var body = msg[msg.t];
+        delete msg[msg.t];
+        var url = Config.reportUrl + "?" + serialize(msg);
+        post(url, body);
+        // new Image().src = `${Config.reportUrl}?${serialize(msg)}`
+    }
+    function post(url, body) {
+        var XMLHttpRequest = window.__oXMLHttpRequest_ || window.XMLHttpRequest;
+        if (typeof XMLHttpRequest === 'function') {
+            try {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", url, !0);
+                xhr.setRequestHeader("Content-Type", "text/plain");
+                xhr.send(JSON.stringify(body));
+            }
+            catch (e) {
+                warn('[bombayjs] Failed to log, POST请求失败');
+            }
+        }
+        else {
+            warn('[bombayjs] Failed to log, 浏览器不支持XMLHttpRequest');
+        }
+    }
+    // 健康检查上报
+    function sendBeacon(e) {
+        "object" == typeof e && (e = serialize(e));
+        e = Config.reportUrl + e;
+        window && window.navigator && "function" == typeof window.navigator.sendBeacon
+            ? window.navigator.sendBeacon(e, '')
+            : warn("[arms] navigator.sendBeacon not surported");
     }
     //# sourceMappingURL=reporter.js.map
 
@@ -244,6 +293,58 @@
             dr: document.referrer,
             dpr: window.devicePixelRatio,
             de: document.charset,
+        });
+        report(msg);
+    }
+    // 处理html node
+    var normalTarget = function (e) {
+        var t, n, r, a, i, o = [];
+        if (!e || !e.tagName)
+            return "";
+        if (o.push(e.tagName.toLowerCase()), e.id && o.push("#".concat(e.id)), (t = e.className) &&
+            "[object String]" === Object.prototype.toString.call(t))
+            for (n = t.split(/\s+/), i = 0; i < n.length; i++)
+                o.push(".".concat(n[i]));
+        var s = ["type", "name", "title", "alt"];
+        for (i = 0; i < s.length; i++)
+            r = s[i], (a = e.getAttribute(r)) && o.push("[".concat(r, '="').concat(a, '"]'));
+        return o.join("");
+    };
+    function handleClick(event) {
+        var target;
+        try {
+            target = event.target;
+        }
+        catch (u) {
+            target = "<unknown>";
+        }
+        if (0 !== target.length) {
+            var behavior = {
+                type: 'ui.click',
+                data: {
+                    message: function (e) {
+                        debugger;
+                        if (!e || 1 !== e.nodeType)
+                            return "";
+                        for (var t = e || null, n = [], r = 0, a = 0, i = " > ".length, o = ""; t && r++ < 5 && !("html" === (o = normalTarget(t)) || r > 1 && a + n.length * i + o.length >= 80);)
+                            n.push(o), a += o.length, t = t.parentNode;
+                        return n.reverse().join(" > ");
+                    }(target),
+                }
+            };
+            var commonMsg = getCommonMsg();
+            var msg = __assign({}, commonMsg, {
+                t: 'behavior',
+                behavior: behavior,
+            });
+            report(msg);
+        }
+    }
+    function handleBehavior(behavior) {
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, {
+            t: 'behavior',
+            behavior: behavior,
         });
         report(msg);
     }
@@ -366,8 +467,32 @@
         });
         report(msg);
     }
-    //# sourceMappingURL=handlers.js.map
 
+    // hack console
+    function hackConsole() {
+        if (window && window.console) {
+            for (var e = ["debug", "info", "warn", "log", "error"], n = 0; e.length; n++) {
+                var r = e[n];
+                var action = window.console[r];
+                if (!window.console[r])
+                    return;
+                (function (r, action) {
+                    window.console[r] = function () {
+                        var i = Array.prototype.slice.apply(arguments);
+                        var s = {
+                            type: "console",
+                            data: {
+                                level: r,
+                                message: JSON.stringify(i),
+                            }
+                        };
+                        handleBehavior(s);
+                        action && action.apply(null, i);
+                    };
+                })(r, action);
+            }
+        }
+    }
     /**
      * hack pushstate replaceState
      * 派送historystatechange historystatechange事件
@@ -392,6 +517,7 @@
             return f;
         }, history[e].toString = fnToString(e));
     }
+    //# sourceMappingURL=hack.js.map
 
     var Bombay = /** @class */ (function () {
         function Bombay(options, fn) {
@@ -410,12 +536,24 @@
             Config.isError && this.addListenJs();
             Config.isAjax && this.addListenAjax();
             Config.isRecord && this.addRrweb();
+            // 行为是一个页面内的操作
+            Config.isBehavior && this.addListenBehavior();
         };
         Bombay.prototype.sendPv = function () {
             handlePv();
         };
         Bombay.prototype.sendPerf = function () {
             handlePerf();
+        };
+        // 监听行为
+        Bombay.prototype.addListenBehavior = function () {
+            Config.behavior.console && hackConsole();
+            Config.behavior.click && this.addListenClick();
+        };
+        // 监听click
+        Bombay.prototype.addListenClick = function () {
+            on('click', handleClick);
+            on('keypress', handleClick);
         };
         // 监听路由
         Bombay.prototype.addListenRouterChange = function () {
@@ -456,6 +594,7 @@
         };
         return Bombay;
     }());
+    //# sourceMappingURL=index.js.map
 
     return Bombay;
 
