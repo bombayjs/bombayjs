@@ -325,6 +325,7 @@
                           undefined, e && e())
                   }, 0))
               },
+              // behavior
               $aj: function () {
                   return this.hasInitBehavior || a || (! function () {
                           if (document && document.referrer && document.location) {
@@ -395,7 +396,7 @@
           s = r.win,
           c = s.document,
           u = /^(error|api|speed|sum|avg|percent|custom|msg|setPage|setConfig|behavior|performance)$/,
-          // e: config
+          // TODO:e: config
           f = function (e) {
             // debugger
               var t = this;

@@ -1,3 +1,5 @@
+export const noop = function () {}
+
 export function queryString(obj:object):string{
   return encodeURIComponent(JSON.stringify(obj));
 }
@@ -71,4 +73,36 @@ export const parseHash = function (e:string) {
 
 export const parseUrl = function (e: string) {
   return e && "string" == typeof e ? e.replace(/^(https?:)?\/\//, "").replace(/\?.*$/, "") : ""
+}
+
+// 函数toString方法
+export const fnToString = function (e: string) {
+  return function () {
+      return e + "() { [native code] }"
+  }
+}
+
+export const warn: any = function () {
+  var e = "object" == typeof console ? console.warn : noop;
+  try {
+      var t = {
+          warn: e
+      };
+      t.warn.call(t)
+  } catch (n) {
+      return noop
+  }
+  return e
+}()
+
+// 自定义事件，并dispatch
+export const dispatchCustomEvent = function (e, t) {
+  var r;
+  window.CustomEvent 
+    ?  r = new CustomEvent(e, {
+          detail: t
+      }) 
+    : ((r = window.document.createEvent("HTMLEvents")).initEvent(e, !1, !0), r.detail = t)
+  
+    window.dispatchEvent(r)
 }

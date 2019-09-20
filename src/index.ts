@@ -1,6 +1,7 @@
 import { Config, setConfig } from './config'
 import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange,  } from './handlers'
 import {on,off} from './utils/tools'
+import { hackState } from './hack'
 
 export default class Bombay {
   config: ConfigParams
@@ -36,9 +37,10 @@ export default class Bombay {
 
   // 监听路由
   addListenRouterChange() {
+    hackState('pushState')
+    hackState('replaceState')
     on('hashchange', handleHashchange)
     on('historystatechange', handleHistorystatechange)
-    
   }
 
   addListenJs() {

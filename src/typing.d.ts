@@ -5,4 +5,5 @@ interface Navigator {
 interface Window {
   attachEvent: any;
   detachEvent: any;
+  CustomEvent: any;
 }

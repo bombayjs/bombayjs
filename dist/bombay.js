@@ -65,6 +65,7 @@
     }
     //# sourceMappingURL=index.js.map
 
+    var noop = function () { };
     function randomString() {
         for (var e, t, n = 20, r = new Array(n), a = Date.now().toString(36).split(""); n-- > 0;)
             t = (e = 36 * Math.random() | 0).toString(36), r[n] = e % 3 ? t : t.toUpperCase();
@@ -121,7 +122,35 @@
     var parseUrl = function (e) {
         return e && "string" == typeof e ? e.replace(/^(https?:)?\/\//, "").replace(/\?.*$/, "") : "";
     };
-    //# sourceMappingURL=tools.js.map
+    // 函数toString方法
+    var fnToString = function (e) {
+        return function () {
+            return e + "() { [native code] }";
+        };
+    };
+    var warn = function () {
+        var e = "object" == typeof console ? console.warn : noop;
+        try {
+            var t = {
+                warn: e
+            };
+            t.warn.call(t);
+        }
+        catch (n) {
+            return noop;
+        }
+        return e;
+    }();
+    // 自定义事件，并dispatch
+    var dispatchCustomEvent = function (e, t) {
+        var r;
+        window.CustomEvent
+            ? r = new CustomEvent(e, {
+                detail: t
+            })
+            : ((r = window.document.createEvent("HTMLEvents")).initEvent(e, !1, !0), r.detail = t);
+        window.dispatchEvent(r);
+    };
 
     // 默认参数
     var GlobalVal = {
@@ -136,6 +165,7 @@
         GlobalVal.sid = randomString();
         GlobalVal.sBegin = Date.now();
     }
+    //# sourceMappingURL=global.js.map
 
     function getCommonMsg() {
         var u = navigator.connection;
@@ -196,6 +226,7 @@
         var h = document.documentElement.clientHeight || document.body.clientHeight;
         return w + 'x' + h;
     }
+    //# sourceMappingURL=index.js.map
 
     // 上报
     function report(msg) {
@@ -335,6 +366,32 @@
         });
         report(msg);
     }
+    //# sourceMappingURL=handlers.js.map
+
+    /**
+     * hack pushstate replaceState
+     * 派送historystatechange historystatechange事件
+     * @export
+     * @param {('pushState' | 'replaceState')} e
+     */
+    function hackState(e) {
+        var t = history[e];
+        "function" == typeof t && (history[e] = function (n, i, s) {
+            var c = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments), u = location.href, f = t.apply(history, c);
+            if (!s || "string" != typeof s)
+                return f;
+            if (s === u)
+                return f;
+            try {
+                var l = u.split("#"), h = s.split("#"), p = parseUrl(l[0]), d = parseUrl(h[0]), g = l[1] && l[1].replace(/^\/?(.*)/, "$1"), v = h[1] && h[1].replace(/^\/?(.*)/, "$1");
+                p !== d ? dispatchCustomEvent("historystatechange", d) : g !== v && dispatchCustomEvent("historystatechange", v);
+            }
+            catch (m) {
+                warn("[retcode] error in " + e + ": " + m);
+            }
+            return f;
+        }, history[e].toString = fnToString(e));
+    }
 
     var Bombay = /** @class */ (function () {
         function Bombay(options, fn) {
@@ -362,6 +419,8 @@
         };
         // 监听路由
         Bombay.prototype.addListenRouterChange = function () {
+            hackState('pushState');
+            hackState('replaceState');
             on('hashchange', handleHashchange);
             on('historystatechange', handleHistorystatechange);
         };
@@ -397,7 +456,6 @@
         };
         return Bombay;
     }());
-    //# sourceMappingURL=index.js.map
 
     return Bombay;
 
