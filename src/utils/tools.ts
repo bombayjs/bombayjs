@@ -56,8 +56,8 @@ export function isTypeOf (data: any, type?: string) {
 
 export const on = function (event, fn, remove?) {
   window.addEventListener ? window.addEventListener(event, function a(i) {
-    remove && window.removeEventListener(event, a, !1), fn.call(this, i)
-  }, !1) : window.attachEvent && window.attachEvent("on" + event, function i(a) {
+    remove && window.removeEventListener(event, a, true), fn.call(this, i)
+  }, true) : window.attachEvent && window.attachEvent("on" + event, function i(a) {
     remove && window.detachEvent("on" + event, i), fn.call(this, a)
   })
 }
