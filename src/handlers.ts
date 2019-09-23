@@ -2,7 +2,7 @@ import { Config, getConfig, } from './config'
 import { queryString, serialize, each, parseHash, warn, splitGroup, } from './utils/tools'
 import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
-import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, } from './config/global'
+import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, resetGlobalHealth,} from './config/global'
 
 // 处理pv
 export function handlePv(): void {
@@ -163,8 +163,8 @@ function setPage(page,) {
   }, 300)
 }
 
-function handleHealth() {
-  let healthy = GlobalVal._health.apifail || GlobalVal._health.errcount ? 0 : 1
+export function handleHealth() {
+  let healthy = GlobalVal._health.errcount ? 0 : 1
   let commonMsg = getCommonMsg()
   let ret: healthMsg = {
     ...commonMsg,
@@ -175,6 +175,7 @@ function handleHealth() {
       stay: Date.now() - GlobalVal.sBegin, // 停留时间
     }
   }
+  resetGlobalHealth()
   report(ret)
 }
 

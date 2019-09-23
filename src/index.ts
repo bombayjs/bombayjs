@@ -1,5 +1,5 @@
 import { Config, setConfig } from './config'
-import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, } from './handlers'
+import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, handleHealth, } from './handlers'
 import {on,off} from './utils/tools'
 import { hackState, hackConsole, hackhook, } from './hack'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, } from './config/global'
@@ -32,6 +32,7 @@ export default class Bombay {
     Config.isResource && this.sendResource()
     // 绑定全局变量
     window.__bb = this
+    this.addListenUnload()
   }
 
   sendPv() {
@@ -85,6 +86,11 @@ export default class Bombay {
     hackhook()
   }
 
+  // beforeunload
+  addListenUnload() {
+    on('beforeunload', handleHealth)
+  }
+
   addRrweb() {
 
   }
@@ -103,11 +109,15 @@ export default class Bombay {
 
   // 监听资源
   removeListenResource() {
-    off('load', handleResource);
+    off('beforeunload', handleHealth);
   }
 
   removeListenAjax() {
 
+  }
+
+  removeListenUnload() {
+    off('load', handleResource);
   }
 
   removeRrweb() {
@@ -132,5 +142,6 @@ export default class Bombay {
     Config.isAjax && this.removeListenAjax()
     Config.isRecord && this.removeRrweb()
     Config.isResource && this.removeListenResource()
+    this.removeListenResource()
   }
 }

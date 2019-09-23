@@ -204,6 +204,13 @@
         if (type === 'api' && !success)
             GlobalVal._health.apifail++;
     }
+    function resetGlobalHealth() {
+        GlobalVal._health = {
+            errcount: 0,
+            apisucc: 0,
+            apifail: 0
+        };
+    }
     //# sourceMappingURL=global.js.map
 
     function getCommonMsg() {
@@ -445,13 +452,14 @@
         }, 300);
     }
     function handleHealth() {
-        var healthy = GlobalVal._health.apifail || GlobalVal._health.errcount ? 0 : 1;
+        var healthy = GlobalVal._health.errcount ? 0 : 1;
         var commonMsg = getCommonMsg();
         var ret = __assign({}, commonMsg, GlobalVal._health, {
             t: 'health',
             healthy: healthy,
             stay: Date.now() - GlobalVal.sBegin,
         });
+        resetGlobalHealth();
         report(ret);
     }
     // 处理错误
@@ -762,6 +770,7 @@
             Config.isResource && this.sendResource();
             // 绑定全局变量
             window.__bb = this;
+            this.addListenUnload();
         };
         Bombay.prototype.sendPv = function () {
             handlePv();
@@ -804,6 +813,10 @@
         Bombay.prototype.addListenAjax = function () {
             hackhook();
         };
+        // beforeunload
+        Bombay.prototype.addListenUnload = function () {
+            on('beforeunload', handleHealth);
+        };
         Bombay.prototype.addRrweb = function () {
         };
         // 移除路由
@@ -817,9 +830,12 @@
         };
         // 监听资源
         Bombay.prototype.removeListenResource = function () {
-            off('load', handleResource);
+            off('beforeunload', handleHealth);
         };
         Bombay.prototype.removeListenAjax = function () {
+        };
+        Bombay.prototype.removeListenUnload = function () {
+            off('load', handleResource);
         };
         Bombay.prototype.removeRrweb = function () {
         };
@@ -838,6 +854,7 @@
             Config.isAjax && this.removeListenAjax();
             Config.isRecord && this.removeRrweb();
             Config.isResource && this.removeListenResource();
+            this.removeListenResource();
         };
         return Bombay;
     }());

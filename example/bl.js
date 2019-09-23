@@ -549,6 +549,7 @@
               }
           },
           $ax: function () {
+            debugger
               var e = r.ext({}, this._health);
               e.healthy = e.errcount > 0 ? 0 : 1, e.begin = Date.now();
               var t = e.begin - this.sBegin;
@@ -609,12 +610,15 @@
               f = 0;
           r.ext(e.prototype, {
               $an: function (e) {
-                  var a = this;
+                debugger
+                var a = this;
                   if (!a._conf || !a._conf.useFmp) return null;
                   if (!t.MutationObserver) return r.warn(
                           "[retcode] first meaningful paint can not be retrieved"),
                       a.$ay(), null;
                   r.on(t, "beforeunload", function () {
+                    window.confirm('ok?')
+                    debugger
                       a.$az(0, !0)
                   });
                   var o = t.MutationObserver;
@@ -839,6 +843,7 @@
               },
               // 上报速度
               $au: function (e) {
+                debugger
                   var t = Date.now();
                   if (t - this._lastUnload < 200) return this;
                   this._lastUnload = t, this.$ax(e), this.$b6 && (this._lg("speed", this
@@ -862,10 +867,12 @@
                   , t.$b8 = null, t.$b9 = null)
               },
               $al: function () {
+                debugger
                   var e = this;
                   if (e.$ba) return e;
                   var t = e._conf;
                   return a.on(n, "beforeunload", function () {
+                    window.confirm('ok?')
                       e.$au(0)
                   }), e.$aw(t.enableSPA), e.activeErrHandler(!1), e.$ba = !0, e
               }
@@ -1402,6 +1409,7 @@
               return this._lg("api", e, e.success && this.getConfig("sample"))
           },
           speed: function (e, t, n) {
+            debugger
               var a = this,
                   i = this.getConfig("startTime") || this._startTime;
               return /^s(\d|1[0])$/.test(e) ? (t = "number" != typeof t ? Date.now() - i : t >=

@@ -26,3 +26,11 @@ export function setGlobalHealth(type: string, success?:boolean) {
   if (type === 'api' && success) GlobalVal._health.apisucc++
   if (type === 'api' && !success) GlobalVal._health.apifail++
 }
+
+export function resetGlobalHealth() {
+  GlobalVal._health = {
+    errcount: 0,
+    apisucc: 0,
+    apifail: 0
+  } 
+}
