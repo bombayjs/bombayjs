@@ -632,6 +632,10 @@
             off('error', handleErr);
             off('unhandledrejection', handleErr);
         };
+        // 监听资源
+        Bombay.prototype.removeListenResource = function () {
+            off('load', handleResource);
+        };
         Bombay.prototype.removeListenAjax = function () {
         };
         Bombay.prototype.removeRrweb = function () {
@@ -641,10 +645,10 @@
             Config.isError && this.removeListenJs();
             Config.isAjax && this.removeListenAjax();
             Config.isRecord && this.removeRrweb();
+            Config.isResource && this.removeListenResource();
         };
         return Bombay;
     }());
-    //# sourceMappingURL=index.js.map
 
     return Bombay;
 

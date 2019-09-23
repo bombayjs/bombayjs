@@ -97,6 +97,11 @@ export default class Bombay {
     off('unhandledrejection', handleErr)
   }
 
+  // 监听资源
+  removeListenResource() {
+    off('load', handleResource);
+  }
+
   removeListenAjax() {
 
   }
@@ -110,5 +115,6 @@ export default class Bombay {
     Config.isError && this.removeListenJs()
     Config.isAjax && this.removeListenAjax()
     Config.isRecord && this.removeRrweb()
+    Config.isResource && this.removeListenResource()
   }
 }
