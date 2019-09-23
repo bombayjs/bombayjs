@@ -143,6 +143,7 @@ export function handlePerf(): void {
 }
 
 // 处理hash变化
+// 注意在路由栈的路由不会触发
 export function handleHashchange(e): void {
   const page = parseHash(location.hash)
   page && setPage(page)
@@ -154,7 +155,7 @@ export function handleHistorystatechange(e): void {
   page && setPage(page)
 }
 
-function setPage(page,) {
+export function setPage(page) {
   handleHealth()
   setTimeout(()=> {
     setGlobalPage(page)

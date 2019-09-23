@@ -1,5 +1,5 @@
 import { parseUrl, fnToString, warn, dispatchCustomEvent, on, } from './utils/tools'
-import { handleBehavior, handleApi } from './handlers'
+import { handleBehavior, handleApi, setPage, } from './handlers'
 import { Config } from './config'
 
 // hack console
@@ -138,5 +138,15 @@ function hackAjax() {
       }
       return xhr
     }
+  }
+}
+
+export function hackOnpopstate() {
+  window['__onpopstate_'] = window.onpopstate
+  window.onpopstate = function () {
+    for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++) a[o] = arguments[o];
+    var s = window.location.href;
+    setPage(s)
+    if (window.__onpopstate_) return window.__onpopstate_.apply(this, a)
   }
 }

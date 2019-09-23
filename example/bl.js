@@ -83,7 +83,6 @@
           $ac: function () {},
           // 健康检查上报方式
           $ad: function (e) {
-            debugger
 
               a(e, this.getConfig("imgUrl"))
           },
@@ -289,7 +288,6 @@
                           },
                           n = t.onpopstate;
                       t.onpopstate = function () {
-                        debugger
                           for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++) a[
                               o] = arguments[o];
                           var s = t.location.href;
@@ -549,7 +547,6 @@
               }
           },
           $ax: function () {
-            debugger
               var e = r.ext({}, this._health);
               e.healthy = e.errcount > 0 ? 0 : 1, e.begin = Date.now();
               var t = e.begin - this.sBegin;
@@ -610,7 +607,6 @@
               f = 0;
           r.ext(e.prototype, {
               $an: function (e) {
-                debugger
                 var a = this;
                   if (!a._conf || !a._conf.useFmp) return null;
                   if (!t.MutationObserver) return r.warn(
@@ -618,7 +614,6 @@
                       a.$ay(), null;
                   r.on(t, "beforeunload", function () {
                     window.confirm('ok?')
-                    debugger
                       a.$az(0, !0)
                   });
                   var o = t.MutationObserver;
@@ -843,7 +838,6 @@
               },
               // 上报速度
               $au: function (e) {
-                debugger
                   var t = Date.now();
                   if (t - this._lastUnload < 200) return this;
                   this._lastUnload = t, this.$ax(e), this.$b6 && (this._lg("speed", this
@@ -867,7 +861,6 @@
                   , t.$b8 = null, t.$b9 = null)
               },
               $al: function () {
-                debugger
                   var e = this;
                   if (e.$ba) return e;
                   var t = e._conf;
@@ -914,7 +907,6 @@
                       if ("function" == typeof n[o]) {
                           var e = n[o];
                           n[s] = e, n[o] = function (t, o) {
-                            debugger
                               var s = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments),
                                   c = a;
                               if (!c || !c.api) return e.apply(n, s);
@@ -1302,7 +1294,6 @@
           constructor: s,
           _super: a,
           sum: function (e, t, n) {
-            debugger
               try {
                   return this._lg("sum", o(e, {
                       val: t || 1,
@@ -1409,7 +1400,6 @@
               return this._lg("api", e, e.success && this.getConfig("sample"))
           },
           speed: function (e, t, n) {
-            debugger
               var a = this,
                   i = this.getConfig("startTime") || this._startTime;
               return /^s(\d|1[0])$/.test(e) ? (t = "number" != typeof t ? Date.now() - i : t >=

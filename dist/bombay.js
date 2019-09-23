@@ -434,6 +434,7 @@
         report(msg);
     }
     // 处理hash变化
+    // 注意在路由栈的路由不会触发
     function handleHashchange(e) {
         var page = parseHash(location.hash);
         page && setPage(page);
@@ -744,6 +745,17 @@
             };
         }
     }
+    function hackOnpopstate() {
+        window['__onpopstate_'] = window.onpopstate;
+        window.onpopstate = function () {
+            for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++)
+                a[o] = arguments[o];
+            var s = window.location.href;
+            setPage(s);
+            if (window.__onpopstate_)
+                return window.__onpopstate_.apply(this, a);
+        };
+    }
     //# sourceMappingURL=hack.js.map
 
     var Bombay = /** @class */ (function () {
@@ -771,6 +783,7 @@
             // 绑定全局变量
             window.__bb = this;
             this.addListenUnload();
+            hackOnpopstate();
         };
         Bombay.prototype.sendPv = function () {
             handlePv();

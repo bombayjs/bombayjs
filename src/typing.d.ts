@@ -9,4 +9,5 @@ interface Window {
   __oXMLHttpRequest_: any;
   XMLHttpRequest: any;
   __bb: any;
+  __onpopstate_: any;
 }
