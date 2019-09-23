@@ -1,5 +1,5 @@
 import { Config, setConfig } from './config'
-import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, } from './handlers'
+import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, } from './handlers'
 import {on,off} from './utils/tools'
 import { hackState, hackConsole, hackhook, } from './hack'
 
@@ -28,6 +28,8 @@ export default class Bombay {
     // 行为是一个页面内的操作
     Config.isBehavior && this.addListenBehavior()
     Config.isResource && this.sendResource()
+    // 绑定全局变量
+    window.__bb = this
   }
 
   sendPv() {
@@ -108,6 +110,18 @@ export default class Bombay {
 
   removeRrweb() {
 
+  }
+
+  sum(key: string, val: number) {
+    handleSum(key, val)
+  }
+
+  avg(key: string, val: number) {
+    handleAvg(key, val)
+  }
+
+  msg(key: string) {
+    handleMsg(key)
   }
 
   destroy() {

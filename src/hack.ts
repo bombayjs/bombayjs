@@ -1,5 +1,6 @@
 import { parseUrl, fnToString, warn, dispatchCustomEvent, on, } from './utils/tools'
 import { handleBehavior, handleApi } from './handlers'
+import { Config } from './config'
 
 // hack console
 export function hackConsole() {
@@ -129,9 +130,9 @@ function hackAjax() {
               var r = xhr.getResponseHeader("Content-Type");
               if (r && !/(text)|(json)/.test(r))return
             }
-            handleApi(page, !0, time, status, xhr.responseText.substr(0,1000) || '', begin)
+            handleApi(page, !0, time, status, xhr.responseText.substr(0,Config.maxLength) || '', begin)
           } else {
-            handleApi(page, !1, time, status || 'FAILED', xhr.responseText.substr(0,1000) || '', begin)
+            handleApi(page, !1, time, status || 'FAILED', xhr.responseText.substr(0,Config.maxLength) || '', begin)
           }
         }
       }

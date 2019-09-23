@@ -1,5 +1,5 @@
 import { Config, getConfig, } from './config'
-import { queryString, serialize, each, parseHash, warn } from './utils/tools'
+import { queryString, serialize, each, parseHash, warn, splitGroup, } from './utils/tools'
 import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
 import { setGlobalPage, setGlobalSid, } from './config/global'
@@ -313,3 +313,59 @@ export function handleApi(url, success, time, code, msg, beigin) {
   if (include > -1) return
   report(apiMsg)
 }
+
+export function handleSum(key: string, val: number = 1) {
+  let commonMsg = getCommonMsg()
+  let g = splitGroup(key)
+  let ret: sumMsg = {
+    ...commonMsg,
+    ...g,
+    ...{
+      t: 'sum',
+      val,
+    }
+  }
+  report(ret)
+}
+
+export function handleAvg(key: string, val: number = 1) {
+  let commonMsg = getCommonMsg()
+  let g = splitGroup(key)
+  let ret: avgMsg = {
+    ...commonMsg,
+    ...g,
+    ...{
+      t: 'avg',
+      val,
+    }
+  }
+  report(ret)
+}
+
+export function handleMsg(key: string) {
+  let commonMsg = getCommonMsg()
+  let g = splitGroup(key)
+  let ret: msgMsg = {
+    ...commonMsg,
+    ...{
+      t: 'msg',
+      group: g.group,
+      msg: g.key.substr(0, Config.maxLength)
+    }
+  }
+  report(ret)
+}
+
+// export function handlePercent(key: string, val: number = 1) {
+//   let commonMsg = getCommonMsg()
+//   let g = splitGroup(key)
+//   let ret: sumMsg = {
+//     ...commonMsg,
+//     ...g,
+//     ...{
+//       t: 'avg',
+//       val,
+//     }
+//   }
+//   report(ret)
+// }

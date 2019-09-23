@@ -9,9 +9,9 @@ interface Records {
   data: ReportData
 }
 
-type ReportData = ErrorMsg | ResourceMsg | ApiMsg  | pvMsg | healthMsg | perfMsg | behaviorMsg
+type ReportData = ErrorMsg | ResourceMsg | ApiMsg  | pvMsg | healthMsg | perfMsg | behaviorMsg | sumMsg | avgMsg | percentMsg | msgMsg
 
-type MsgType = '' | 'error' | 'res' | 'api' | 'promise' | 'pv' | 'health' | 'perf' | 'behavior'
+type MsgType = '' | 'error' | 'res' | 'api' | 'promise' | 'pv' | 'health' | 'perf' | 'behavior' | 'sum' | 'avg' | 'percent' | 'msg'
 
 interface CommonMsg{
   t: MsgType // 类型
@@ -128,4 +128,28 @@ interface clickBehavior {
   data: {
     message: string,
   },
+}
+
+interface sumMsg extends CommonMsg {
+  group: string
+  key: string
+  val: number,
+}
+
+interface avgMsg extends CommonMsg {
+  group: string
+  key: string
+  val: number,
+}
+
+interface percentMsg extends CommonMsg {
+  group: string
+  key: string
+  subkey: string,
+  val: number,
+}
+
+interface msgMsg extends CommonMsg {
+  group: string
+  msg: string,
 }

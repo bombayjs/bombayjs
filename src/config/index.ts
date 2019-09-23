@@ -34,7 +34,9 @@ export let Config = {
   behavior: {
     console: true,
     click: true,
-  }
+  },
+  // 最长上报数据长度
+  maxLength: 1000,
 }
 
 // 设置参数

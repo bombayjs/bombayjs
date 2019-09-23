@@ -106,3 +106,15 @@ export const dispatchCustomEvent = function (e, t) {
   
     window.dispatchEvent(r)
 }
+
+// group::key
+export const splitGroup = function (e: string) {
+  var n = e.split("::");
+  return n.length > 1 ? {
+    group: n[0],
+    key: n[1]
+} : {
+  group: "default_group",
+  key: n[0]
+}
+}

@@ -8,4 +8,5 @@ interface Window {
   CustomEvent: any;
   __oXMLHttpRequest_: any;
   XMLHttpRequest: any;
+  __bb: any;
 }

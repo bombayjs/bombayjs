@@ -66,7 +66,9 @@
         behavior: {
             console: true,
             click: true,
-        }
+        },
+        // 最长上报数据长度
+        maxLength: 1000,
     };
     // 设置参数
     function setConfig(options) {
@@ -75,7 +77,6 @@
     function getConfig(e) {
         return e ? Config[e] ? Config[e] : {} : {};
     }
-    //# sourceMappingURL=index.js.map
 
     var noop = function () { };
     function randomString() {
@@ -162,6 +163,17 @@
             })
             : ((r = window.document.createEvent("HTMLEvents")).initEvent(e, !1, !0), r.detail = t);
         window.dispatchEvent(r);
+    };
+    // group::key
+    var splitGroup = function (e) {
+        var n = e.split("::");
+        return n.length > 1 ? {
+            group: n[0],
+            key: n[1]
+        } : {
+            group: "default_group",
+            key: n[0]
+        };
     };
     //# sourceMappingURL=tools.js.map
 
@@ -525,7 +537,49 @@
             return;
         report(apiMsg);
     }
-    //# sourceMappingURL=handlers.js.map
+    function handleSum(key, val) {
+        if (val === void 0) { val = 1; }
+        var commonMsg = getCommonMsg();
+        var g = splitGroup(key);
+        var ret = __assign({}, commonMsg, g, {
+            t: 'sum',
+            val: val,
+        });
+        report(ret);
+    }
+    function handleAvg(key, val) {
+        if (val === void 0) { val = 1; }
+        var commonMsg = getCommonMsg();
+        var g = splitGroup(key);
+        var ret = __assign({}, commonMsg, g, {
+            t: 'avg',
+            val: val,
+        });
+        report(ret);
+    }
+    function handleMsg(key) {
+        var commonMsg = getCommonMsg();
+        var g = splitGroup(key);
+        var ret = __assign({}, commonMsg, {
+            t: 'msg',
+            group: g.group,
+            msg: g.key.substr(0, Config.maxLength)
+        });
+        report(ret);
+    }
+    // export function handlePercent(key: string, val: number = 1) {
+    //   let commonMsg = getCommonMsg()
+    //   let g = splitGroup(key)
+    //   let ret: sumMsg = {
+    //     ...commonMsg,
+    //     ...g,
+    //     ...{
+    //       t: 'avg',
+    //       val,
+    //     }
+    //   }
+    //   report(ret)
+    // }
 
     // hack console
     function hackConsole() {
@@ -642,10 +696,10 @@
                                 if (r && !/(text)|(json)/.test(r))
                                     return;
                             }
-                            handleApi(page, !0, time, status, xhr.responseText.substr(0, 1000) || '', begin);
+                            handleApi(page, !0, time, status, xhr.responseText.substr(0, Config.maxLength) || '', begin);
                         }
                         else {
-                            handleApi(page, !1, time, status || 'FAILED', xhr.responseText.substr(0, 1000) || '', begin);
+                            handleApi(page, !1, time, status || 'FAILED', xhr.responseText.substr(0, Config.maxLength) || '', begin);
                         }
                     }
                 };
@@ -674,6 +728,8 @@
             // 行为是一个页面内的操作
             Config.isBehavior && this.addListenBehavior();
             Config.isResource && this.sendResource();
+            // 绑定全局变量
+            window.__bb = this;
         };
         Bombay.prototype.sendPv = function () {
             handlePv();
@@ -734,6 +790,15 @@
         Bombay.prototype.removeListenAjax = function () {
         };
         Bombay.prototype.removeRrweb = function () {
+        };
+        Bombay.prototype.sum = function (key, val) {
+            handleSum(key, val);
+        };
+        Bombay.prototype.avg = function (key, val) {
+            handleAvg(key, val);
+        };
+        Bombay.prototype.msg = function (key) {
+            handleMsg(key);
         };
         Bombay.prototype.destroy = function () {
             Config.enableSPA && this.removeListenRouterChange();
