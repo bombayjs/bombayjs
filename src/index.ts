@@ -1,5 +1,5 @@
 import { Config, setConfig } from './config'
-import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, } from './handlers'
+import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, } from './handlers'
 import {on,off} from './utils/tools'
 import { hackState, hackConsole } from './hack'
 
@@ -27,6 +27,7 @@ export default class Bombay {
     Config.isRecord && this.addRrweb();
     // 行为是一个页面内的操作
     Config.isBehavior && this.addListenBehavior()
+    Config.isResource && this.sendResource()
   }
 
   sendPv() {
@@ -35,6 +36,16 @@ export default class Bombay {
 
   sendPerf() {
     handlePerf()
+  }
+
+  // 发送资源
+  sendResource() {
+    'complete' === window.document.readyState ? handleResource() : this.addListenResource()
+  }
+
+  // 监听资源
+  addListenResource() {
+    on('load', handleResource);
   }
 
   // 监听行为

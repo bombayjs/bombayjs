@@ -1,4 +1,4 @@
-import { Config, } from './config'
+import { Config, getConfig, } from './config'
 import { queryString, serialize, each, parseHash } from './utils/tools'
 import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
@@ -254,5 +254,42 @@ function reportHttpError(msg:CommonMsg,data:any):void{
   // new Image().src = `${Config.reportUrl}?commit=${queryString(msg)}`
 }
 
-
+export function handleResource() {
+  var performance = window.performance
+  if (!performance || "object" != typeof performance || "function" != typeof performance.getEntriesByType) return null;
+  let commonMsg = getCommonMsg()
+  let msg: ResourceMsg = {
+    ...commonMsg,
+    ...{
+      dom: 0,
+      load: 0,
+      t: 'res',
+      res: '',
+    }
+  }
+  var i = performance.timing || {},
+      o = performance.getEntriesByType("resource") || [];
+  if ("function" == typeof window.PerformanceNavigationTiming) {
+    var s = performance.getEntriesByType("navigation")[0];
+    s && (i = s)
+  }
+  each({
+    dom: [10, 8],
+    load: [14, 1]
+  }, function (e, t) {
+      var r = i[TIMING_KEYS[e[1]]],
+          o = i[TIMING_KEYS[e[0]]];
+      if (r > 0 && o > 0) {
+          var s = Math.round(o - r);
+          s >= 0 && s < 36e5 && (msg[t] = s)
+      }
+  })
+  // 过滤忽略的url
+  o = o.filter(item => {
+    var include = getConfig('ignore').ignoreApis.findIndex(ignoreApi => item.name.indexOf(ignoreApi) > -1)
+    return include > -1 ? false : true
+  })
+  msg.res = JSON.stringify(o)
+  report(msg)
+}
 

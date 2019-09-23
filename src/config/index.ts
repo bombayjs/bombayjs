@@ -44,3 +44,7 @@ export function setConfig(options) {
       ...options
   }
 }
+
+export function getConfig(e: string) {
+  return e ? Config[e] ? Config[e] : {} : {}
+}

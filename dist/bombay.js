@@ -72,6 +72,9 @@
     function setConfig(options) {
         Config = __assign({}, Config, options);
     }
+    function getConfig(e) {
+        return e ? Config[e] ? Config[e] : {} : {};
+    }
     //# sourceMappingURL=index.js.map
 
     var noop = function () { };
@@ -240,7 +243,7 @@
 
     // 上报
     function report(e) {
-        "resource" === e.t ?
+        "res" === e.t ?
             send(e)
             : "error" === e.t ? send(e)
                 : "behavior" === e.t ? send(e)
@@ -470,6 +473,41 @@
         });
         report(msg);
     }
+    function handleResource() {
+        var performance = window.performance;
+        if (!performance || "object" != typeof performance || "function" != typeof performance.getEntriesByType)
+            return null;
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, {
+            dom: 0,
+            load: 0,
+            t: 'res',
+            res: '',
+        });
+        var i = performance.timing || {}, o = performance.getEntriesByType("resource") || [];
+        if ("function" == typeof window.PerformanceNavigationTiming) {
+            var s = performance.getEntriesByType("navigation")[0];
+            s && (i = s);
+        }
+        each({
+            dom: [10, 8],
+            load: [14, 1]
+        }, function (e, t) {
+            var r = i[TIMING_KEYS[e[1]]], o = i[TIMING_KEYS[e[0]]];
+            if (r > 0 && o > 0) {
+                var s = Math.round(o - r);
+                s >= 0 && s < 36e5 && (msg[t] = s);
+            }
+        });
+        // 过滤忽略的url
+        o = o.filter(function (item) {
+            var include = getConfig('ignore').ignoreApis.findIndex(function (ignoreApi) { return item.name.indexOf(ignoreApi) > -1; });
+            return include > -1 ? false : true;
+        });
+        msg.res = JSON.stringify(o);
+        report(msg);
+    }
+    //# sourceMappingURL=handlers.js.map
 
     // hack console
     function hackConsole() {
@@ -541,12 +579,21 @@
             Config.isRecord && this.addRrweb();
             // 行为是一个页面内的操作
             Config.isBehavior && this.addListenBehavior();
+            Config.isResource && this.sendResource();
         };
         Bombay.prototype.sendPv = function () {
             handlePv();
         };
         Bombay.prototype.sendPerf = function () {
             handlePerf();
+        };
+        // 发送资源
+        Bombay.prototype.sendResource = function () {
+            'complete' === window.document.readyState ? handleResource() : this.addListenResource();
+        };
+        // 监听资源
+        Bombay.prototype.addListenResource = function () {
+            on('load', handleResource);
         };
         // 监听行为
         Bombay.prototype.addListenBehavior = function () {

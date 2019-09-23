@@ -798,11 +798,16 @@
                   t.$a2(function () {
                       var n = o();
                       n 
-                        && (n.load && n.load <= 2e3 
-                          || n.load && n.load <= 8e3 && Math.random() > .05 
-                          || (n.page = t.$a7(!0), 
-                        n.dl = location.href, 
-                        e && (n = a.ext(n, e)), t._lg("res", n, t.getConfig("sample"))))
+                        && (
+                          // n.load && n.load <= 2e3 ||
+                          // n.load && n.load <= 8e3 && Math.random() > .05 || 
+                          (
+                            n.page = t.$a7(!0), 
+                            n.dl = location.href, 
+                            e && (n = a.ext(n, e)), 
+                            t._lg("res", n, t.getConfig("sample"))
+                          )
+                        )
                   })
               },
               // 发送pv $av()
@@ -1210,6 +1215,7 @@
       var r = e("../util"),
           a = e("./constants").TIMING_KEYS;
       t.exports = function () {
+        debugger
           var e = r.win || {},
               t = e.performance;
           if (!t || "object" != typeof t || "function" != typeof t.getEntriesByType) return null;

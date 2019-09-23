@@ -4,7 +4,7 @@ import { queryString, serialize, warn } from './utils/tools'
 
 // 上报
 export function report(e: ReportData) {
-    "resource" === e.t ? 
+    "res" === e.t ? 
     send(e) 
       : "error" === e.t ? send(e) 
       : "behavior" === e.t ? send(e) 
