@@ -2,13 +2,12 @@ import { Config, setConfig } from './config'
 import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, } from './handlers'
 import {on,off} from './utils/tools'
 import { hackState, hackConsole, hackhook, } from './hack'
+import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, } from './config/global'
 
 export default class Bombay {
-  config: ConfigParams
 
   constructor(options, fn) {
     this.init(options)
-    
   }
 
   init(options) {
@@ -18,6 +17,9 @@ export default class Bombay {
       return
     }
     setConfig(options)
+    setGlobalPage(location.pathname.toLowerCase())
+    setGlobalSid()
+
     Config.autoSendPv && this.sendPv();
     Config.isPage && this.sendPerf();
 

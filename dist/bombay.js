@@ -77,6 +77,7 @@
     function getConfig(e) {
         return e ? Config[e] ? Config[e] : {} : {};
     }
+    //# sourceMappingURL=index.js.map
 
     var noop = function () { };
     function randomString() {
@@ -182,6 +183,11 @@
         page: '',
         sid: '',
         sBegin: Date.now(),
+        _health: {
+            errcount: 0,
+            apisucc: 0,
+            apifail: 0
+        }
     };
     function setGlobalPage(page) {
         GlobalVal.page = page;
@@ -189,6 +195,14 @@
     function setGlobalSid() {
         GlobalVal.sid = randomString();
         GlobalVal.sBegin = Date.now();
+    }
+    function setGlobalHealth(type, success) {
+        if (type === 'error')
+            GlobalVal._health.errcount++;
+        if (type === 'api' && success)
+            GlobalVal._health.apisucc++;
+        if (type === 'api' && !success)
+            GlobalVal._health.apifail++;
     }
     //# sourceMappingURL=global.js.map
 
@@ -291,9 +305,8 @@
     // 健康检查上报
     function sendBeacon(e) {
         "object" == typeof e && (e = serialize(e));
-        e = Config.reportUrl + e;
         window && window.navigator && "function" == typeof window.navigator.sendBeacon
-            ? window.navigator.sendBeacon(e, '')
+            ? window.navigator.sendBeacon(Config.reportUrl, e)
             : warn("[arms] navigator.sendBeacon not surported");
     }
     //# sourceMappingURL=reporter.js.map
@@ -424,9 +437,22 @@
         page && setPage(page);
     }
     function setPage(page) {
-        setGlobalPage(page);
-        setGlobalSid();
-        handlePv();
+        handleHealth();
+        setTimeout(function () {
+            setGlobalPage(page);
+            setGlobalSid();
+            handlePv();
+        }, 300);
+    }
+    function handleHealth() {
+        var healthy = GlobalVal._health.apifail || GlobalVal._health.errcount ? 0 : 1;
+        var commonMsg = getCommonMsg();
+        var ret = __assign({}, commonMsg, GlobalVal._health, {
+            t: 'health',
+            healthy: healthy,
+            stay: Date.now() - GlobalVal.sBegin,
+        });
+        report(ret);
     }
     // 处理错误
     function handleErr(error) {
@@ -441,6 +467,7 @@
             //     reportHttpError(error)
             //   break;
         }
+        setGlobalHealth('error');
     }
     // 捕获js异常
     function reportCaughtError(error) {
@@ -521,6 +548,8 @@
             warn('[retcode] api is null');
             return;
         }
+        // 设置健康状态
+        setGlobalHealth('api', success);
         var commonMsg = getCommonMsg();
         var apiMsg = __assign({}, commonMsg, {
             t: 'api',
@@ -707,6 +736,7 @@
             };
         }
     }
+    //# sourceMappingURL=hack.js.map
 
     var Bombay = /** @class */ (function () {
         function Bombay(options, fn) {
@@ -719,6 +749,8 @@
                 return;
             }
             setConfig(options);
+            setGlobalPage(location.pathname.toLowerCase());
+            setGlobalSid();
             Config.autoSendPv && this.sendPv();
             Config.isPage && this.sendPerf();
             Config.enableSPA && this.addListenRouterChange();

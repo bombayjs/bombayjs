@@ -83,6 +83,8 @@
           $ac: function () {},
           // 健康检查上报方式
           $ad: function (e) {
+            debugger
+
               a(e, this.getConfig("imgUrl"))
           },
           $ae: function () {},
@@ -287,7 +289,7 @@
                           },
                           n = t.onpopstate;
                       t.onpopstate = function () {
-                        // debugger
+                        debugger
                           for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++) a[
                               o] = arguments[o];
                           var s = t.location.href;

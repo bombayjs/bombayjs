@@ -41,8 +41,7 @@ export function post(url, body) {
 // 健康检查上报
 export function sendBeacon(e:any) {
   "object" == typeof e && (e = serialize(e));
-  e = Config.reportUrl + e
   window && window.navigator && "function" == typeof window.navigator.sendBeacon 
-    ? window.navigator.sendBeacon(e, '') 
+    ? window.navigator.sendBeacon(Config.reportUrl, e) 
     : warn("[arms] navigator.sendBeacon not surported")
 }

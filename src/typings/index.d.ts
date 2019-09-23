@@ -69,12 +69,15 @@ interface ApiMsg extends CommonMsg{
 
 
 // 健康检查上报
-interface healthMsg extends CommonMsg{
+interface healthMsg extends CommonMsg, Health{
+  healthy: number // 健康？ 0/1
+  stay: number // 停留时间
+}
+
+interface Health {
   errcount: number // error次数
   apisucc: number // api成功次数
   apifail: number // api错误次数
-  healthy: number // 健康？ 0/1
-  stay: number // 停留时间
 }
 
 // 页面性能上报

@@ -2,7 +2,7 @@ import { Config, getConfig, } from './config'
 import { queryString, serialize, each, parseHash, warn, splitGroup, } from './utils/tools'
 import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
-import { setGlobalPage, setGlobalSid, } from './config/global'
+import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, } from './config/global'
 
 // 处理pv
 export function handlePv(): void {
@@ -155,9 +155,27 @@ export function handleHistorystatechange(e): void {
 }
 
 function setPage(page,) {
-  setGlobalPage(page)
-  setGlobalSid()
-  handlePv()
+  handleHealth()
+  setTimeout(()=> {
+    setGlobalPage(page)
+    setGlobalSid()
+    handlePv()
+  }, 300)
+}
+
+function handleHealth() {
+  let healthy = GlobalVal._health.apifail || GlobalVal._health.errcount ? 0 : 1
+  let commonMsg = getCommonMsg()
+  let ret: healthMsg = {
+    ...commonMsg,
+    ...GlobalVal._health,
+    ...{
+      t: 'health',
+      healthy, // 健康？ 0/1
+      stay: Date.now() - GlobalVal.sBegin, // 停留时间
+    }
+  }
+  report(ret)
 }
 
 // 处理错误
@@ -173,6 +191,7 @@ export function handleErr(error): void {
     //     reportHttpError(error)
     //   break;
   }
+  setGlobalHealth('error')
 }
 
 // 捕获js异常
@@ -295,6 +314,9 @@ export function handleApi(url, success, time, code, msg, beigin) {
     warn('[retcode] api is null')
     return
   }
+  // 设置健康状态
+  setGlobalHealth('api', success)
+
   let commonMsg = getCommonMsg()
   let apiMsg: ApiMsg = {
     ...commonMsg,
