@@ -1,7 +1,7 @@
 import { Config, setConfig } from './config'
 import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, } from './handlers'
 import {on,off} from './utils/tools'
-import { hackState, hackConsole } from './hack'
+import { hackState, hackConsole, hackhook, } from './hack'
 
 export default class Bombay {
   config: ConfigParams
@@ -78,7 +78,7 @@ export default class Bombay {
   }
 
   addListenAjax() {
-
+    hackhook()
   }
 
   addRrweb() {

@@ -234,7 +234,6 @@
               },
               l = function (e, t) {
                   return function (n) {
-                    debugger
                       if (n && n !== c) {
                           c = n;
                           var r;
@@ -906,22 +905,16 @@
                       if ("function" == typeof n[o]) {
                           var e = n[o];
                           n[s] = e, n[o] = function (t, o) {
-                              var s = 1 === arguments.length ? [
-                                      arguments[0]] : Array.apply(null,
-                                      arguments),
+                              var s = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments),
                                   c = a;
                               if (!c || !c.api) return e.apply(n, s);
-                              if (o && ("HEAD" === o.method || "no-cors" ===
-                                      o.mode)) return e.apply(n, s);
+                              if (o && ("HEAD" === o.method || "no-cors" === o.mode)) return e.apply(n, s);
                               var u = Date.now(),
                                   f = c._conf,
-                                  l = (t && "string" != typeof t ? t.url :
-                                      t) || "",
+                                  l = (t && "string" != typeof t ? t.url : t) || "",
                                   h = l;
-                              if (l = r.$ar(l), !r.$bb(l, !0)) return e.apply(
-                                  n, s);
-                              l = r.$aq(l, f.ignoreApiPath ? f.ignoreApiPath :
-                                  f.apiHelper);
+                              if (l = r.$ar(l), !r.$bb(l, !0)) return e.apply(n, s);
+                              l = r.$aq(l, f.ignoreApiPath ? f.ignoreApiPath : f.apiHelper);
                               var p = f.enableLinkTrace,
                                   d = "",
                                   g = "",
@@ -930,101 +923,52 @@
                                   var m = "";
                                   try {
                                       m = location.origin ? location.origin :
-                                          location.protocol + "//" +
-                                          location.hostname + (location.port ?
-                                              ":" + location.port : "")
+                                          location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "")
                                   } catch (w) {
                                       m = ""
                                   }
                                   if (r.checkSameOrigin(h, m)) {
                                       if (t && "string" != typeof t) try {
-                                          if (s[0].headers &&
-                                              "function" == typeof s[
-                                                  0].headers.get &&
-                                              "function" == typeof s[
-                                                  0].headers.append) {
-                                              var y = s[0].headers.get(
-                                                      "EagleEye-TraceID"
-                                                  ),
-                                                  $ = s[0].headers.get(
-                                                      "EagleEye-SessionID"
-                                                  ),
-                                                  b = s[0].headers.get(
-                                                      "EagleEye-pAppName"
-                                                  );
-                                              y ? d = y : (d = c.getTraceId()[
-                                                          "EagleEye-TraceID"
-                                                          ], s[0].headers
-                                                      .append(
-                                                          "EagleEye-TraceID",
-                                                          d)), $ ? g =
-                                                  $ : (g = c.getSessionId()[
-                                                          "EagleEye-SessionID"
-                                                          ], s[0].headers
-                                                      .append(
-                                                          "EagleEye-SessionID",
-                                                          g)), b ||
-                                                  s[0].headers.append(
-                                                      "EagleEye-pAppName",
-                                                      v)
+                                          if (s[0].headers && "function" == typeof s[0].headers.get && "function" == typeof s[0].headers.append) {
+                                              var y = s[0].headers.get("EagleEye-TraceID"),
+                                                  $ = s[0].headers.get("EagleEye-SessionID"),
+                                                  b = s[0].headers.get("EagleEye-pAppName");
+                                              y ? d = y : (d = c.getTraceId()["EagleEye-TraceID"], s[0].headers.append("EagleEye-TraceID",d))
+                                              , $ ? g = $ : (g = c.getSessionId()["EagleEye-SessionID"], s[0].headers.append("EagleEye-SessionID",g))
+                                              , b || s[0].headers.append("EagleEye-pAppName", v)
                                           }
                                       } catch (E) {
-                                          r.warn(
-                                              "[retcode] fetch failed to set header, exception is :\n" +
-                                              E)
+                                          r.warn("[retcode] fetch failed to set header, exception is :\n" + E)
                                       }
                                       o && (o.headers = o.headers ? o.headers :
-                                          {}, o.headers[
-                                              "EagleEye-TraceID"] ?
-                                          d = o.headers[
-                                              "EagleEye-TraceID"] :
-                                          (d = c.getTraceId()[
-                                              "EagleEye-TraceID"
-                                              ], o.headers[
-                                              "EagleEye-TraceID"
-                                              ] = d), o.headers[
-                                              "EagleEye-SessionID"] ?
-                                          g = o.headers[
-                                              "EagleEye-SessionID"] :
-                                          (g = c.getSessionId()[
-                                              "EagleEye-SessionID"
-                                              ], o.headers[
-                                              "EagleEye-SessionID"
-                                              ] = g), o.headers[
-                                              "EagleEye-pAppName"] ||
-                                          (o.headers[
-                                              "EagleEye-pAppName"
-                                              ] = v))
+                                          {}, o.headers["EagleEye-TraceID"] ?
+                                          d = o.headers["EagleEye-TraceID"] :
+                                          (d = c.getTraceId()["EagleEye-TraceID"], o.headers["EagleEye-TraceID"] = d), o.headers["EagleEye-SessionID"] ?
+                                          g = o.headers["EagleEye-SessionID"] :
+                                          (g = c.getSessionId()["EagleEye-SessionID"], o.headers["EagleEye-SessionID"] = g), o.headers["EagleEye-pAppName"] ||
+                                          (o.headers["EagleEye-pAppName"] = v))
                                   }
                               }
                               return e.apply(n, s).then(function (e) {
                                   if (!c || !c.api) return e;
                                   var t = e.clone(),
                                       n = t.headers;
-                                  if (n && "function" == typeof n
-                                      .get) {
-                                      var r = n.get(
-                                          "content-type");
-                                      if (r && !/(text)|(json)/.test(
-                                              r)) return e
+                                  if (n && "function" == typeof n.get) {
+                                      var r = n.get("content-type");
+                                      if (r && !/(text)|(json)/.test(r)) return e
                                   }
                                   var a = Date.now() - u;
-                                  return t.ok ? t.text().then(
+                                  return t.ok 
+                                  ? t.text().then(
                                       function (e) {
-                                          i(c, f.parseResponse,
-                                              l, h, e, t
-                                              .status ||
-                                              200, a, u,
-                                              d, g)
-                                      }) : c.api(l, !1, a, t
-                                      .status || 404, t.statusText,
-                                      u, d, g), e
+                                          i(c, f.parseResponse,l, h, e, t.status || 200, a, u, d, g)
+                                      }) 
+                                  : c.api(l, !1, a, t.status || 404, t.statusText, u, d, g)
+                                  , e
                               })["catch"](function (e) {
                                   if (!c || !c.api) throw e;
                                   var t = Date.now() - u;
-                                  throw c.api(l, !1, t, e.name ||
-                                      "Error", e.message, u,
-                                      d, g), e
+                                  throw c.api(l, !1, t, e.name || "Error", e.message, u, d, g), e
                               })
                           }, n[o].toString = r.$b0(o)
                       }
@@ -1045,17 +989,11 @@
                                   v = "",
                                   m = "";
                               return n.open = function (e, t) {
-                                  var a = 1 === arguments.length ? [
-                                      arguments[0]] : Array.apply(
-                                      null, arguments);
-                                  if (l.apply(n, a), u = t || "", c =
-                                      r.$ar(u), c = c ? r.$aq(c, p.ignoreApiPath ?
-                                          p.ignoreApiPath : p.apiHelper
-                                      ) : "", d) {
+                                  var a = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments);
+                                  if (l.apply(n, a), u = t || "", c = r.$ar(u), c = c ? r.$aq(c, p.ignoreApiPath ? p.ignoreApiPath : p.apiHelper) : "", d) {
                                       var i = "";
                                       try {
-                                          i = location.origin ?
-                                              location.origin :
+                                          i = location.origin ? location.origin :
                                               location.protocol +
                                               "//" + location.hostname +
                                               (location.port ? ":" +
@@ -1142,7 +1080,6 @@
       var r = e("../util"),
           a = e("./constants").TIMING_KEYS;
       t.exports = function () {
-        // debugger
           var e = r.win || {},
               t = e.performance;
           if (!t || "object" != typeof t) return null;
@@ -1215,7 +1152,6 @@
       var r = e("../util"),
           a = e("./constants").TIMING_KEYS;
       t.exports = function () {
-        debugger
           var e = r.win || {},
               t = e.performance;
           if (!t || "object" != typeof t || "function" != typeof t.getEntriesByType) return null;
@@ -1429,6 +1365,7 @@
               }
           },
           api: function (e, t, n, a, o, s, c, u) {
+            debugger
               if (!e) return r.warn("[retcode] api is null"), this;
               if (e = "string" == typeof e ? {
                       api: e,

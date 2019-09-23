@@ -326,7 +326,6 @@
                 type: 'ui.click',
                 data: {
                     message: function (e) {
-                        debugger;
                         if (!e || 1 !== e.nodeType)
                             return "";
                         for (var t = e || null, n = [], r = 0, a = 0, i = " > ".length, o = ""; t && r++ < 5 && !("html" === (o = normalTarget(t)) || r > 1 && a + n.length * i + o.length >= 80);)
@@ -404,13 +403,11 @@
     }
     // 处理hash变化
     function handleHashchange(e) {
-        debugger;
         var page = parseHash(location.hash);
         page && setPage(page);
     }
     // 处理hash变化
     function handleHistorystatechange(e) {
-        debugger;
         var page = parseHash(e.detail);
         page && setPage(page);
     }
@@ -507,6 +504,27 @@
         msg.res = JSON.stringify(o);
         report(msg);
     }
+    function handleApi(url, success, time, code, msg, beigin) {
+        if (!url) {
+            warn('[retcode] api is null');
+            return;
+        }
+        var commonMsg = getCommonMsg();
+        var apiMsg = __assign({}, commonMsg, {
+            t: 'api',
+            beigin: beigin,
+            url: url,
+            success: success,
+            time: time,
+            code: code,
+            msg: msg,
+        });
+        // 过滤忽略的url
+        var include = getConfig('ignore').ignoreApis.findIndex(function (ignoreApi) { return url.indexOf(ignoreApi) > -1; });
+        if (include > -1)
+            return;
+        report(apiMsg);
+    }
     //# sourceMappingURL=handlers.js.map
 
     // hack console
@@ -558,7 +576,52 @@
             return f;
         }, history[e].toString = fnToString(e));
     }
-    //# sourceMappingURL=hack.js.map
+    function hackhook() {
+        hackAjax();
+    }
+    // 如果返回过长，会被截断，最长1000个字符
+    function hackAjax() {
+        if ("function" == typeof window.XMLHttpRequest) {
+            var begin = 0, page = '';
+            var __oXMLHttpRequest_ = window.XMLHttpRequest;
+            window['__oXMLHttpRequest_'] = __oXMLHttpRequest_;
+            window.XMLHttpRequest = function (t) {
+                var xhr = new __oXMLHttpRequest_(t);
+                if (!xhr.addEventListener)
+                    return xhr;
+                var open = xhr.open, send = xhr.send;
+                xhr.open = function (method, url) {
+                    var a = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments);
+                    url = url;
+                    page = parseUrl(url);
+                    open.apply(xhr, a);
+                };
+                xhr.send = function () {
+                    begin = Date.now();
+                    var a = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments);
+                    send.apply(xhr, a);
+                };
+                xhr.onreadystatechange = function () {
+                    if (page && 4 === xhr.readyState) {
+                        var time = Date.now() - begin;
+                        if (xhr.status >= 200 && xhr.status <= 299) {
+                            var status = xhr.status || 200;
+                            if ("function" == typeof xhr.getResponseHeader) {
+                                var r = xhr.getResponseHeader("Content-Type");
+                                if (r && !/(text)|(json)/.test(r))
+                                    return;
+                            }
+                            handleApi(page, !0, time, status, xhr.responseText.substr(0, 1000) || '', begin);
+                        }
+                        else {
+                            handleApi(page, !1, time, status || 'FAILED', xhr.responseText.substr(0, 1000) || '', begin);
+                        }
+                    }
+                };
+                return xhr;
+            };
+        }
+    }
 
     var Bombay = /** @class */ (function () {
         function Bombay(options, fn) {
@@ -620,6 +683,7 @@
             // window.addEventListener('rejectionhandled', rejectionhandled, true);
         };
         Bombay.prototype.addListenAjax = function () {
+            hackhook();
         };
         Bombay.prototype.addRrweb = function () {
         };
@@ -649,6 +713,7 @@
         };
         return Bombay;
     }());
+    //# sourceMappingURL=index.js.map
 
     return Bombay;
 

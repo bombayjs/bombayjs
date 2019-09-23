@@ -29,6 +29,7 @@ function C() {
 }
 
 </script>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
 </head>
 <body>
   <script>
@@ -55,11 +56,17 @@ function C() {
 <button onclick="C()">aaa</button>
   <script>
     function C() {
-      let stateObj = {
-        foo: "bar",
-      };
-      history.pushState(stateObj1, "page 2", "bar.html");
+      // let stateObj = {
+      //   foo: "bar",
+      // };
+      // history.pushState(stateObj1, "page 2", "bar.html");
+      $.ajax({
+        url: 'http://localhost:5000/example/zan'
+      });
     }
   </script>
+  <script>
+      
+    </script>
 </body>
 </html>

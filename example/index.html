@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <script src='../dist/bombay.js'></script>
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
 </head>
 <body>
   <img src='http://pic16.nipic.com/20111006/6239936_092702973000_2.jpg'/>
@@ -59,8 +60,22 @@
       //   };
 
       //   history.pushState(stateObj, "page 2", "bar.html");
-      console.log('a', 'b')
+      // console.log('a', 'b')
+      // $.ajax({
+      //   url: 'http://localhost:5000/example/zan'
+      // });
+      $.ajax({
+        type: 'POST',
+        contentType: 'application/json',
+        url: 'http://sitm.igola.com/web-gateway/api-data-service/data/find-hot',
+        data: JSON.stringify({"lang":"ZH","timestamp":1569225444068}),
+        dataType: 'json'
+      });
+      // $.post('http://sitm.igola.com/web-gateway/api-data-service/data/find-hot',{"lang":"ZH","timestamp":1569225444068});
     }
+  </script>
+  <script>
+    
   </script>
 </body>
 </html>

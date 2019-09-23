@@ -55,16 +55,16 @@ interface ResourceMsg extends CommonMsg{
 }
 
 interface ApiMsg extends CommonMsg{
-  api:string // 接口
-  method:string
+  url:string // 接口
   success: boolean // 成功？
   time: number // 耗时
   code: number // 接口返回的code
   msg: string // 信息
-  params: string
-  query: string
-  body: string
-  response:string
+  // method:string
+  // params: string
+  // query: string
+  // body: string
+  // response:string
 }
 
 

@@ -1,5 +1,5 @@
 import { Config, getConfig, } from './config'
-import { queryString, serialize, each, parseHash } from './utils/tools'
+import { queryString, serialize, each, parseHash, warn } from './utils/tools'
 import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
 import { setGlobalPage, setGlobalSid, } from './config/global'
@@ -46,7 +46,6 @@ export function handleClick(event) {
       type: 'ui.click',
       data: {
         message: function (e) {
-          debugger
           if (!e || 1 !== e.nodeType) return "";
           for (var t = e || null, n = [], r = 0, a = 0,i = " > ".length, o = ""; t && r++ < 5 &&!("html" === (o = normalTarget(t)) || r > 1 && a + n.length * i + o.length >= 80);) 
           n.push(o), a += o.length, t = t.parentNode;
@@ -145,19 +144,17 @@ export function handlePerf(): void {
 
 // 处理hash变化
 export function handleHashchange(e): void {
-  debugger
   const page = parseHash(location.hash)
   page && setPage(page)
 }
 
 // 处理hash变化
 export function handleHistorystatechange(e): void {
-  debugger
   const page = parseHash(e.detail)
   page && setPage(page)
 }
 
-function setPage(page: string) {
+function setPage(page,) {
   setGlobalPage(page)
   setGlobalSid()
   handlePv()
@@ -293,3 +290,26 @@ export function handleResource() {
   report(msg)
 }
 
+export function handleApi(url, success, time, code, msg, beigin) {
+  if (!url) {
+    warn('[retcode] api is null')
+    return
+  }
+  let commonMsg = getCommonMsg()
+  let apiMsg: ApiMsg = {
+    ...commonMsg,
+    ...{
+      t: 'api',
+      beigin,
+      url, // 接口
+      success, // 成功？
+      time, // 耗时
+      code, // 接口返回的code
+      msg, // 信息
+    }
+  }
+  // 过滤忽略的url
+  var include = getConfig('ignore').ignoreApis.findIndex(ignoreApi => url.indexOf(ignoreApi) > -1)
+  if (include > -1) return
+  report(apiMsg)
+}
