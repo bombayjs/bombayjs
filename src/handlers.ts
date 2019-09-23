@@ -188,9 +188,10 @@ function reportCaughtError(error:any):void{
     ...commonMsg,
     ...{
       t: 'error',
+      st: 'caughterror',
       cate: n, // 类别
       msg: a && a.substring(0, 1e3), // 信息
-      stack: i && i.substring(0, 1e3), // 错误栈
+      detail: i && i.substring(0, 1e3), // 错误栈
       file: error.filename || "", // 出错文件
       line: error.lineno || "", // 行
       col: error.colno || "", // 列
@@ -203,13 +204,14 @@ function reportCaughtError(error:any):void{
 function reportResourceError(error:any):void{
   let commonMsg = getCommonMsg()
   let target = error.target
-  let msg: ResourceMsg = {
+  let msg: ErrorMsg = {
     ...commonMsg,
     ...{
-      t: 'resource',
+      t: 'error',
+      st: 'resource',
       msg: target.outerHTML,
-      src: target.src,
-      tagName: target.localName.toUpperCase(),
+      file: target.src,
+      stack: target.localName.toUpperCase(),
     }
   }
   report(msg)
@@ -219,10 +221,11 @@ function reportResourceError(error:any):void{
 function reportPromiseError(error:any):void{
   console.log(error)
   let commonMsg = getCommonMsg()
-  let msg: PromiseMsg = {
+  let msg: ErrorMsg = {
     ...commonMsg,
     ...{
-      t: 'promise',
+      t: 'error',
+      st: 'promise',
       msg: error.reason,
     }
   }

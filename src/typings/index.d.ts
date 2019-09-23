@@ -9,7 +9,7 @@ interface Records {
   data: ReportData
 }
 
-type ReportData = ErrorMsg | ResourceMsg | ApiMsg | PromiseMsg | pvMsg | healthMsg | perfMsg | behaviorMsg
+type ReportData = ErrorMsg | ResourceMsg | ApiMsg  | pvMsg | healthMsg | perfMsg | behaviorMsg
 
 type MsgType = '' | 'error' | 'resource' | 'api' | 'promise' | 'pv' | 'health' | 'perf' | 'behavior'
 
@@ -39,22 +39,19 @@ interface pvMsg extends CommonMsg{
   de: string // document 编码
 }
 interface ErrorMsg extends CommonMsg{
-  cate:string // 类别
+  st: string // sub type
   msg:string // 信息
-  stack:string // 错误栈
-  file:string // 出错文件
-  line:number // 行
-  col:number // 列
+  cate?:string // 类别
+  detail?:string // 错误栈 或 出错标签
+  file?:string // 出错文件
+  line?:number // 行
+  col?:number // 列
 }
 
 interface ResourceMsg extends CommonMsg{
   msg:string
   src:string
   tagName:string
-}
-
-interface PromiseMsg extends CommonMsg{
-  msg:string,
 }
 
 interface ApiMsg extends CommonMsg{

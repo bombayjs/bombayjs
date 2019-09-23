@@ -436,9 +436,10 @@
         var n = error.name || "CustomError", a = error.message || "", i = error.error.stack || "";
         var msg = __assign({}, commonMsg, {
             t: 'error',
+            st: 'caughterror',
             cate: n,
             msg: a && a.substring(0, 1e3),
-            stack: i && i.substring(0, 1e3),
+            detail: i && i.substring(0, 1e3),
             file: error.filename || "",
             line: error.lineno || "",
             col: error.colno || "",
@@ -450,10 +451,11 @@
         var commonMsg = getCommonMsg();
         var target = error.target;
         var msg = __assign({}, commonMsg, {
-            t: 'resource',
+            t: 'error',
+            st: 'resource',
             msg: target.outerHTML,
-            src: target.src,
-            tagName: target.localName.toUpperCase(),
+            file: target.src,
+            stack: target.localName.toUpperCase(),
         });
         report(msg);
     }
@@ -462,7 +464,8 @@
         console.log(error);
         var commonMsg = getCommonMsg();
         var msg = __assign({}, commonMsg, {
-            t: 'promise',
+            t: 'error',
+            st: 'promise',
             msg: error.reason,
         });
         report(msg);
