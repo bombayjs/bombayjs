@@ -60,9 +60,10 @@ function C() {
       //   foo: "bar",
       // };
       // history.pushState(stateObj1, "page 2", "bar.html");
-      $.ajax({
-        url: 'http://localhost:5000/example/zan'
-      });
+      // $.ajax({
+      //   url: 'http://localhost:5000/example/zan'
+      // });
+      fetch('http://localhost:5000/example/zan')
     }
   </script>
   <script>

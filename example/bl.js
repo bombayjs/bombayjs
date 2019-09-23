@@ -905,6 +905,7 @@
                       if ("function" == typeof n[o]) {
                           var e = n[o];
                           n[s] = e, n[o] = function (t, o) {
+                            debugger
                               var s = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments),
                                   c = a;
                               if (!c || !c.api) return e.apply(n, s);

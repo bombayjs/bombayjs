@@ -64,14 +64,16 @@
       // $.ajax({
       //   url: 'http://localhost:5000/example/zan'
       // });
-      $.ajax({
-        type: 'POST',
-        contentType: 'application/json',
-        url: 'http://sitm.igola.com/web-gateway/api-data-service/data/find-hot',
-        data: JSON.stringify({"lang":"ZH","timestamp":1569225444068}),
-        dataType: 'json'
-      });
+      // $.ajax({
+      //   type: 'POST',
+      //   contentType: 'application/json',
+      //   url: 'http://sitm.igola.com/web-gateway/api-data-service/data/find-hot',
+      //   data: JSON.stringify({"lang":"ZH","timestamp":1569225444068}),
+      //   dataType: 'json'
+      // });
       // $.post('http://sitm.igola.com/web-gateway/api-data-service/data/find-hot',{"lang":"ZH","timestamp":1569225444068});
+      fetch('http://localhost:5000/example/zan1')
+
     }
   </script>
   <script>
