@@ -1,6 +1,6 @@
 {
   "name": "bombayjs",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "前端监控sdk",
   "main": "dist/bombay.js",
   "scripts": {
