@@ -366,6 +366,9 @@
                     }(target),
                 }
             };
+            // 空信息不上报
+            if (!behavior.data.message)
+                return;
             var commonMsg = getCommonMsg();
             var msg = __assign({}, commonMsg, {
                 t: 'behavior',
