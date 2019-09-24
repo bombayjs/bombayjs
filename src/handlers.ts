@@ -6,6 +6,7 @@ import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, resetGlobalHea
 
 // 处理pv
 export function handlePv(): void {
+  if (!Config.autoSendPv) return
   let commonMsg = getCommonMsg()
   let msg: pvMsg = {
     ...commonMsg,
@@ -148,17 +149,17 @@ export function handlePerf(): void {
 // 注意在路由栈的路由不会触发
 export function handleHashchange(e): void {
   let page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase()
-  page && setPage(page)
+  page && setPage(page, false)
 }
 
 // 处理hash变化
 export function handleHistorystatechange(e): void {
   let page = Config.enableSPA ? parseHash(e.detail.toLowerCase()) : e.detail.toLowerCase()
-  page && setPage(page)
+  page && setPage(page, false)
 }
 
-export function setPage(page) {
-  handleHealth()
+export function setPage(page, isFirst?: boolean) {
+  !isFirst && handleHealth()
   setTimeout(()=> {
     setGlobalPage(page)
     setGlobalSid()

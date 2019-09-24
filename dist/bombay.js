@@ -320,6 +320,8 @@
 
     // 处理pv
     function handlePv() {
+        if (!Config.autoSendPv)
+            return;
         var commonMsg = getCommonMsg();
         var msg = __assign({}, commonMsg, {
             t: 'pv',
@@ -440,15 +442,15 @@
     // 注意在路由栈的路由不会触发
     function handleHashchange(e) {
         var page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase();
-        page && setPage(page);
+        page && setPage(page, false);
     }
     // 处理hash变化
     function handleHistorystatechange(e) {
         var page = Config.enableSPA ? parseHash(e.detail.toLowerCase()) : e.detail.toLowerCase();
-        page && setPage(page);
+        page && setPage(page, false);
     }
-    function setPage(page) {
-        handleHealth();
+    function setPage(page, isFirst) {
+        !isFirst && handleHealth();
         setTimeout(function () {
             setGlobalPage(page);
             setGlobalSid();
@@ -621,7 +623,6 @@
     //   }
     //   report(ret)
     // }
-    //# sourceMappingURL=handlers.js.map
 
     // hack console
     // "debug", "info", "warn", "log", "error"
@@ -756,7 +757,7 @@
             for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++)
                 a[o] = arguments[o];
             var s = window.location.href;
-            setPage(s);
+            setPage(s, false);
             if (window.__onpopstate_)
                 return window.__onpopstate_.apply(this, a);
         };
@@ -775,9 +776,7 @@
             }
             setConfig(options);
             var page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase();
-            setGlobalPage(page);
-            setGlobalSid();
-            Config.autoSendPv && this.sendPv();
+            setPage(page, true);
             Config.isPage && this.sendPerf();
             Config.enableSPA && this.addListenRouterChange();
             Config.isError && this.addListenJs();
@@ -790,9 +789,6 @@
             window.__bb = this;
             this.addListenUnload();
             hackOnpopstate();
-        };
-        Bombay.prototype.sendPv = function () {
-            handlePv();
         };
         Bombay.prototype.sendPerf = function () {
             handlePerf();
@@ -881,6 +877,7 @@
         };
         return Bombay;
     }());
+    //# sourceMappingURL=index.js.map
 
     return Bombay;
 

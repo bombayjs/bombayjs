@@ -1,5 +1,5 @@
 import { Config, setConfig } from './config'
-import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, handleHealth, handleApi, } from './handlers'
+import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, handleHealth, handleApi,setPage, } from './handlers'
 import {on,off,parseHash} from './utils/tools'
 import { hackState, hackConsole, hackhook, hackOnpopstate, } from './hack'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, } from './config/global'
@@ -18,10 +18,8 @@ export default class Bombay {
     }
     setConfig(options)
     let page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase()
-    setGlobalPage(page)
-    setGlobalSid()
+    setPage(page, true)
 
-    Config.autoSendPv && this.sendPv();
     Config.isPage && this.sendPerf();
 
     Config.enableSPA && this.addListenRouterChange();
@@ -35,10 +33,6 @@ export default class Bombay {
     window.__bb = this
     this.addListenUnload()
     hackOnpopstate()
-  }
-
-  sendPv() {
-    handlePv()
   }
 
   sendPerf() {

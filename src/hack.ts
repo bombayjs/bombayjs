@@ -147,7 +147,7 @@ export function hackOnpopstate() {
   window.onpopstate = function () {
     for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++) a[o] = arguments[o];
     var s = window.location.href;
-    setPage(s)
+    setPage(s, false)
     if (window.__onpopstate_) return window.__onpopstate_.apply(this, a)
   }
 }
