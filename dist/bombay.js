@@ -284,7 +284,7 @@
                         : send(e);
         return this;
     }
-    // img上报
+    // post上报
     function send(msg) {
         var body = msg[msg.t];
         delete msg[msg.t];
@@ -316,7 +316,6 @@
             ? window.navigator.sendBeacon(Config.reportUrl, e)
             : warn("[arms] navigator.sendBeacon not surported");
     }
-    //# sourceMappingURL=reporter.js.map
 
     // 处理pv
     function handlePv() {
@@ -621,6 +620,7 @@
     //   }
     //   report(ret)
     // }
+    //# sourceMappingURL=handlers.js.map
 
     // hack console
     function hackConsole() {

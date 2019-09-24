@@ -13,7 +13,7 @@ export function report(e: ReportData) {
   return this
 }
 
-// img上报
+// post上报
 export function send(msg: ReportData) {
   var body = msg[msg.t]
   delete msg[msg.t]
