@@ -1,5 +1,5 @@
 import { Config, setConfig } from './config'
-import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, handleHealth, } from './handlers'
+import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, handleHealth, handleApi, } from './handlers'
 import {on,off} from './utils/tools'
 import { hackState, hackConsole, hackhook, hackOnpopstate, } from './hack'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, } from './config/global'
@@ -135,6 +135,10 @@ export default class Bombay {
 
   msg(key: string) {
     handleMsg(key)
+  }
+
+  api(api, success, time, code, msg) {
+    handleApi(api, success, time, code, msg, Date.now())
   }
 
   destroy() {

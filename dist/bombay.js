@@ -1,1 +1,884 @@
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e=e||self).Bombay=t()}(this,function(){"use strict";var p=function(){return(p=Object.assign||function(e){for(var t,n=1,o=arguments.length;n<o;n++)for(var r in t=arguments[n])Object.prototype.hasOwnProperty.call(t,r)&&(e[r]=t[r]);return e}).apply(this,arguments)},s={reportUrl:"http://localhost:10000",token:"",appVersion:"1.0.0",environment:"production",outtime:300,enableSPA:!0,autoSendPv:!0,isPage:!0,isAjax:!0,isResource:!0,isError:!0,isRecord:!0,isBehavior:!0,ignore:{ignoreErrors:[],ignoreUrls:[],ignoreApis:["/api/v1/report/web","livereload.js?snipver=1","/sockjs-node/info"]},behavior:{console:!0,click:!0},maxLength:1e3};function c(e){return e&&s[e]?s[e]:{}}function n(){}function t(){for(var e,t,n=20,o=new Array(n),r=Date.now().toString(36).split("");0<n--;)t=(e=36*Math.random()|0).toString(36),o[n]=e%3?t:t.toUpperCase();for(var i=0;i<8;i++)o.splice(3*i+2,0,r[i]);return o.join("")}function o(e){var t=[];for(var n in e)e.hasOwnProperty(n)&&t.push(encodeURIComponent(n)+"="+encodeURIComponent(e[n]));return t.join("&")}function f(e,t){var n=0,o=e.length;if(function(e,t){var n=Object.prototype.toString.call(e).substring(8).replace("]","");return t?n===t:n}(e,"Array"))for(;n<o&&!1!==t.call(e[n],e[n],n);n++);else for(var r in e)if(!1===t.call(e[r],e[r],r))break;return e}function e(n,o,r){window.addEventListener?window.addEventListener(n,function e(t){r&&window.removeEventListener(n,e,!0),o.call(this,t)},!0):window.attachEvent&&window.attachEvent("on"+n,function e(t){r&&window.detachEvent("on"+n,e),o.call(this,t)})}function r(e,t){return t&&(window.removeEventListener?window.removeEventListener(e,t):window.detachEvent&&window.detachEvent(e,t)),this}function i(e){return(e?h(e.replace(/^#\/?/,"")):"")||"[index]"}function v(e,t){var n;window.CustomEvent?n=new CustomEvent(e,{detail:t}):((n=window.document.createEvent("HTMLEvents")).initEvent(e,!1,!0),n.detail=t),window.dispatchEvent(n)}function a(e){var t=e.split("::");return 1<t.length?{group:t[0],key:t[1]}:{group:"default_group",key:t[0]}}var h=function(e){return e&&"string"==typeof e?e.replace(/^(https?:)?\/\//,"").replace(/\?.*$/,""):""},w=function(){var e="object"==typeof console?console.warn:n;try{var t={warn:e};t.warn.call(t)}catch(e){return n}return e}(),u={page:"",sid:"",sBegin:Date.now(),_health:{errcount:0,apisucc:0,apifail:0}};function d(e){u.page=e}function l(){u.sid=t(),u.sBegin=Date.now()}function g(e,t){"error"===e&&u._health.errcount++,"api"===e&&t&&u._health.apisucc++,"api"!==e||t||u._health.apifail++}function y(){var e=navigator.connection;return{t:"",page:u.page?u.page:location.pathname.toLowerCase(),times:1,v:s.appVersion,token:s.token,e:s.environment,begin:(new Date).getTime(),uid:function(){var e=localStorage.getItem("bombay_uid")||"";e||(e=t(),localStorage.setItem("bombay_uid",e));return e}(),sid:u.sid,sr:screen.width+"x"+screen.height,vp:function(){var e=document.documentElement.clientWidth||document.body.clientWidth,t=document.documentElement.clientHeight||document.body.clientHeight;return e+"x"+t}(),ct:e?e.effectiveType:"",ul:function(){var e=navigator.language||navigator.userLanguage;return e=e.substr(0,2)}(),_v:"1.0.3"}}function m(e){return"res"===e.t?b(e):"error"===e.t?b(e):"behavior"===e.t?b(e):"health"===e.t&&window&&window.navigator&&"function"==typeof window.navigator.sendBeacon?function(e){"object"==typeof e&&(e=o(e)),window&&window.navigator&&"function"==typeof window.navigator.sendBeacon?window.navigator.sendBeacon(s.reportUrl,e):w("[arms] navigator.sendBeacon not surported")}(e):b(e),this}function b(e){var t=e[e.t];delete e[e.t],function(e,t){var n=window.__oXMLHttpRequest_||window.XMLHttpRequest;if("function"==typeof n)try{var o=new n;o.open("POST",e,!0),o.setRequestHeader("Content-Type","text/plain"),o.send(JSON.stringify(t))}catch(e){w("[bombayjs] Failed to log, POST请求失败")}else w("[bombayjs] Failed to log, 浏览器不支持XMLHttpRequest")}(s.reportUrl+"?"+o(e),t)}function L(){var e=y();m(p({},e,{t:"pv",dt:document.title,dl:location.href,dr:document.referrer,dpr:window.devicePixelRatio,de:document.charset}))}function E(e){var t,n,o,r,i,a=[];if(!e||!e.tagName)return"";if(a.push(e.tagName.toLowerCase()),e.id&&a.push("#".concat(e.id)),(t=e.className)&&"[object String]"===Object.prototype.toString.call(t))for(n=t.split(/\s+/),i=0;i<n.length;i++)a.push(".".concat(n[i]));var s=["type","name","title","alt"];for(i=0;i<s.length;i++)o=s[i],(r=e.getAttribute(o))&&a.push("[".concat(o,'="').concat(r,'"]'));return a.join("")}function R(e){var t;try{t=e.target}catch(e){t="<unknown>"}if(0!==t.length){var n={type:"ui.click",data:{message:function(e){if(!e||1!==e.nodeType)return"";for(var t=e||null,n=[],o=0,r=0,i=" > ".length,a="";t&&o++<5&&!("html"===(a=E(t))||1<o&&80<=r+n.length*i+a.length);)n.push(a),r+=a.length,t=t.parentNode;return n.reverse().join(" > ")}(t)}};if(!n.data.message)return;var o=y();m(p({},o,{t:"behavior",behavior:n}))}}var _=["","fetchStart","domainLookupStart","domainLookupEnd","connectStart","connectEnd","requestStart","responseStart","responseEnd","","domInteractive","","domContentLoadedEventEnd","","loadEventStart","","msFirstPaint","secureConnectionStart"];function j(e){var t=i(location.hash);t&&x(t)}function S(e){var t=i(e.detail);t&&x(t)}function x(e){k(),setTimeout(function(){d(e),l(),L()},300)}function k(){var e=u._health.errcount?0:1,t=y(),n=p({},t,u._health,{t:"health",healthy:e,stay:Date.now()-u.sBegin});u._health={errcount:0,apisucc:0,apifail:0},m(n)}function A(e){switch(e.type){case"error":e instanceof ErrorEvent?function(e){var t=y(),n=e.name||"CustomError",o=e.message||"",r=e.error.stack||"";m(p({},t,{t:"error",st:"caughterror",cate:n,msg:o&&o.substring(0,1e3),detail:r&&r.substring(0,1e3),file:e.filename||"",line:e.lineno||"",col:e.colno||""}))}(e):function(e){var t=y(),n=e.target;m(p({},t,{t:"error",st:"resource",msg:n.outerHTML,file:n.src,stack:n.localName.toUpperCase()}))}(e);break;case"unhandledrejection":!function(e){console.log(e);var t=y();m(p({},t,{t:"error",st:"promise",msg:e.reason}))}(e)}g("error")}function C(){var e=window.performance;if(!e||"object"!=typeof e||"function"!=typeof e.getEntriesByType)return null;var t=y(),i=p({},t,{dom:0,load:0,t:"res",res:""}),a=e.timing||{},n=e.getEntriesByType("resource")||[];if("function"==typeof window.PerformanceNavigationTiming){var o=e.getEntriesByType("navigation")[0];o&&(a=o)}f({dom:[10,8],load:[14,1]},function(e,t){var n=a[_[e[1]]],o=a[_[e[0]]];if(0<n&&0<o){var r=Math.round(o-n);0<=r&&r<36e5&&(i[t]=r)}}),n=n.filter(function(t){return!(-1<c("ignore").ignoreApis.findIndex(function(e){return-1<t.name.indexOf(e)}))}),i.res=JSON.stringify(n),m(i)}function P(t,e,n,o,r,i){if(t){g("api",e);var a=y(),s=p({},a,{t:"api",beigin:i,url:t,success:e,time:n,code:o,msg:r});-1<c("ignore").ignoreApis.findIndex(function(e){return-1<t.indexOf(e)})||m(s)}else w("[retcode] api is null")}function T(f){var l=history[f];"function"==typeof l&&(history[f]=function(e,t,n){var o=1===arguments.length?[e]:Array.apply(null,arguments),r=location.href,i=l.apply(history,o);if(!n||"string"!=typeof n)return i;if(n===r)return i;try{var a=r.split("#"),s=n.split("#"),c=h(a[0]),u=h(s[0]),d=a[1]&&a[1].replace(/^\/?(.*)/,"$1"),p=s[1]&&s[1].replace(/^\/?(.*)/,"$1");c!==u?v("historystatechange",u):d!==p&&v("historystatechange",p)}catch(e){w("[retcode] error in "+f+": "+e)}return i},history[f].toString=function(e){return function(){return e+"() { [native code] }"}}(f))}function B(){!function(){if("function"==typeof window.fetch){var r=window.fetch;window.__oFetch_=r,window.fetch=function(e,t){var n=1===arguments.length?[e]:Array.apply(null,arguments),i=Date.now(),o=(e&&"string"!=typeof e?e.url:e)||"",a=h(o);return a?r.apply(window,n).then(function(e){var t=e.clone(),n=t.headers;if(n&&"function"==typeof n.get){var o=n.get("content-type");if(o&&!/(text)|(json)/.test(o))return e}var r=Date.now()-i;return t.text().then(function(e){t.ok?P(a,!0,r,status,e.substr(0,1e3)||"",i):P(a,!1,r,status,e.substr(0,1e3)||"",i)}),e}):r.apply(window,n)}}}(),function(){if("function"==typeof window.XMLHttpRequest){var i=0,a="",n=window.XMLHttpRequest;window.__oXMLHttpRequest_=n,window.XMLHttpRequest=function(e){var o=new n(e);if(!o.addEventListener)return o;var r=o.open,t=o.send;return o.open=function(e,t){var n=1===arguments.length?[e]:Array.apply(null,arguments);a=h(t=t),r.apply(o,n)},o.send=function(){i=Date.now();var e=1===arguments.length?[arguments[0]]:Array.apply(null,arguments);t.apply(o,e)},o.onreadystatechange=function(){if(a&&4===o.readyState){var e=Date.now()-i;if(200<=o.status&&o.status<=299){var t=o.status||200;if("function"==typeof o.getResponseHeader){var n=o.getResponseHeader("Content-Type");if(n&&!/(text)|(json)/.test(n))return}P(a,!0,e,t,o.responseText.substr(0,s.maxLength)||"",i)}else P(a,!1,e,t||"FAILED",o.responseText.substr(0,s.maxLength)||"",i)}},o}}}()}function H(e,t){this.init(e)}return H.prototype.init=function(e){!e||e.token?(function(e){s=p({},s,e)}(e),d(location.pathname.toLowerCase()),l(),s.autoSendPv&&this.sendPv(),s.isPage&&this.sendPerf(),s.enableSPA&&this.addListenRouterChange(),s.isError&&this.addListenJs(),s.isAjax&&this.addListenAjax(),s.isRecord&&this.addRrweb(),s.isBehavior&&this.addListenBehavior(),s.isResource&&this.sendResource(),(window.__bb=this).addListenUnload(),window.__onpopstate_=window.onpopstate,window.onpopstate=function(){for(var e=arguments.length,t=new Array(e),n=0;n<e;n++)t[n]=arguments[n];if(x(window.location.href),window.__onpopstate_)return window.__onpopstate_.apply(this,t)}):console.warn("请输入一个token")},H.prototype.sendPv=function(){L()},H.prototype.sendPerf=function(){!function(){var e=window.performance;if(e&&"object"==typeof e){var i={},a=e.timing||{},t=Date.now(),s=1;if("function"==typeof window.PerformanceNavigationTiming){var n=e.getEntriesByType("navigation")[0];n&&(a=n,s=2)}f({dns:[3,2],tcp:[5,4],ssl:[5,17],ttfb:[7,6],trans:[8,7],dom:[10,8],res:[14,12],firstbyte:[7,2],fpt:[8,1],tti:[10,1],ready:[12,1],load:[14,1]},function(e,t){var n=a[_[e[1]]],o=a[_[e[0]]];if(2===s||0<n&&0<o){var r=Math.round(o-n);0<=r&&r<36e5&&(i[t]=r)}});var o=window.navigator.connection,r=e.navigation||{type:void 0};i.ct=o?o.effectiveType||o.type:"";var c=o&&(o.downlink||o.downlinkMax||o.bandwidth)||null;if((c=999<c?999:c)&&(i.bandwidth=c),i.navtype=1===r.type?"Reload":"Other",1===s&&0<a[_[16]]&&0<a[_[1]]){var u=a[_[16]]-a[_[1]];0<=u&&u<36e5&&(i.fpt=u)}1===s&&0<a[_[1]]?i.begin=a[_[1]]:2===s&&0<i.load?i.begin=t-i.load:i.begin=t;var d=y();m(p({},d,{t:"perf"},i))}}()},H.prototype.sendResource=function(){"complete"===window.document.readyState?C():this.addListenResource()},H.prototype.addListenResource=function(){e("load",C)},H.prototype.addListenBehavior=function(){s.behavior.console&&function(){if(window&&window.console)for(var e=["debug","info","warn","log","error"],t=0;e.length;t++){var n=e[t],o=window.console[n];if(!window.console[n])return;!function(r,i){window.console[r]=function(){var e,t,n=Array.prototype.slice.apply(arguments),o={type:"console",data:{level:r,message:JSON.stringify(n)}};e=o,t=y(),m(p({},t,{t:"behavior",behavior:e})),i&&i.apply(null,n)}}(n,o)}}(),s.behavior.click&&this.addListenClick()},H.prototype.addListenClick=function(){e("click",R),e("keypress",R)},H.prototype.addListenRouterChange=function(){T("pushState"),T("replaceState"),e("hashchange",j),e("historystatechange",S)},H.prototype.addListenJs=function(){e("error",A),e("unhandledrejection",A)},H.prototype.addListenAjax=function(){B()},H.prototype.addListenUnload=function(){e("beforeunload",k)},H.prototype.addRrweb=function(){},H.prototype.removeListenRouterChange=function(){r("hashchange",j),r("historystatechange",S)},H.prototype.removeListenJs=function(){r("error",A),r("unhandledrejection",A)},H.prototype.removeListenResource=function(){r("beforeunload",k)},H.prototype.removeListenAjax=function(){},H.prototype.removeListenUnload=function(){r("load",C)},H.prototype.removeRrweb=function(){},H.prototype.sum=function(e,t){!function(e,t){void 0===t&&(t=1);var n=y(),o=a(e);m(p({},n,o,{t:"sum",val:t}))}(e,t)},H.prototype.avg=function(e,t){!function(e,t){void 0===t&&(t=1);var n=y(),o=a(e);m(p({},n,o,{t:"avg",val:t}))}(e,t)},H.prototype.msg=function(e){!function(e){var t=y(),n=a(e);m(p({},t,{t:"msg",group:n.group,msg:n.key.substr(0,s.maxLength)}))}(e)},H.prototype.destroy=function(){s.enableSPA&&this.removeListenRouterChange(),s.isError&&this.removeListenJs(),s.isAjax&&this.removeListenAjax(),s.isRecord&&this.removeRrweb(),s.isResource&&this.removeListenResource(),this.removeListenResource()},H});
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global = global || self, global.Bombay = factory());
+}(this, function () { 'use strict';
+
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    // 默认参数
+    var Config = {
+        // 上报地址
+        reportUrl: 'http://localhost:10000',
+        // 提交参数
+        token: '',
+        // app版本
+        appVersion: '1.0.0',
+        // 环境
+        environment: 'production',
+        // 脚本延迟上报时间
+        outtime: 300,
+        // 开启单页面？
+        enableSPA: true,
+        // 是否自动上报pv
+        autoSendPv: true,
+        // 是否上报页面性能数据
+        isPage: true,
+        // 是否上报ajax性能数据
+        isAjax: true,
+        // 是否上报页面资源数据
+        isResource: true,
+        // 是否上报错误信息
+        isError: true,
+        // 是否录屏
+        isRecord: true,
+        // 是否上报行为
+        isBehavior: true,
+        ignore: {
+            ignoreErrors: [],
+            ignoreUrls: [],
+            ignoreApis: ['/api/v1/report/web', 'livereload.js?snipver=1', '/sockjs-node/info'],
+        },
+        behavior: {
+            console: true,
+            click: true,
+        },
+        // 最长上报数据长度
+        maxLength: 1000,
+    };
+    // 设置参数
+    function setConfig(options) {
+        Config = __assign({}, Config, options);
+    }
+    function getConfig(e) {
+        return e ? Config[e] ? Config[e] : {} : {};
+    }
+    //# sourceMappingURL=index.js.map
+
+    var noop = function () { };
+    function randomString() {
+        for (var e, t, n = 20, r = new Array(n), a = Date.now().toString(36).split(""); n-- > 0;)
+            t = (e = 36 * Math.random() | 0).toString(36), r[n] = e % 3 ? t : t.toUpperCase();
+        for (var i = 0; i < 8; i++)
+            r.splice(3 * i + 2, 0, a[i]);
+        return r.join("");
+    }
+    // 将{ method: 'get', state: '200' }转为?method=get&state=200
+    function serialize(obj) {
+        var str = [];
+        for (var p in obj)
+            if (obj.hasOwnProperty(p)) {
+                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            }
+        return str.join("&");
+    }
+    function each(data, fn) {
+        var n = 0, r = data.length;
+        if (isTypeOf(data, 'Array'))
+            for (; n < r && !1 !== fn.call(data[n], data[n], n); n++)
+                ;
+        else
+            for (var m in data)
+                if (!1 === fn.call(data[m], data[m], m))
+                    break;
+        return data;
+    }
+    /**
+     * 是否是某类型
+     *
+     * @export
+     * @param {*} data
+     * @param {*} type
+     * @returns 有type就返回true/false,没有就返回对于类型
+     */
+    function isTypeOf(data, type) {
+        var n = Object.prototype.toString.call(data).substring(8).replace("]", "");
+        return type ? n === type : n;
+    }
+    var on = function (event, fn, remove) {
+        window.addEventListener ? window.addEventListener(event, function a(i) {
+            remove && window.removeEventListener(event, a, true), fn.call(this, i);
+        }, true) : window.attachEvent && window.attachEvent("on" + event, function i(a) {
+            remove && window.detachEvent("on" + event, i), fn.call(this, a);
+        });
+    };
+    var off = function (event, fn) {
+        return fn ? (window.removeEventListener ? window.removeEventListener(event, fn) : window.detachEvent &&
+            window.detachEvent(event, fn), this) : this;
+    };
+    var parseHash = function (e) {
+        return (e ? parseUrl(e.replace(/^#\/?/, "")) : "") || "[index]";
+    };
+    var parseUrl = function (e) {
+        return e && "string" == typeof e ? e.replace(/^(https?:)?\/\//, "").replace(/\?.*$/, "") : "";
+    };
+    // 函数toString方法
+    var fnToString = function (e) {
+        return function () {
+            return e + "() { [native code] }";
+        };
+    };
+    var warn = function () {
+        var e = "object" == typeof console ? console.warn : noop;
+        try {
+            var t = {
+                warn: e
+            };
+            t.warn.call(t);
+        }
+        catch (n) {
+            return noop;
+        }
+        return e;
+    }();
+    // 自定义事件，并dispatch
+    var dispatchCustomEvent = function (e, t) {
+        var r;
+        window.CustomEvent
+            ? r = new CustomEvent(e, {
+                detail: t
+            })
+            : ((r = window.document.createEvent("HTMLEvents")).initEvent(e, !1, !0), r.detail = t);
+        window.dispatchEvent(r);
+    };
+    // group::key
+    var splitGroup = function (e) {
+        var n = e.split("::");
+        return n.length > 1 ? {
+            group: n[0],
+            key: n[1]
+        } : {
+            group: "default_group",
+            key: n[0]
+        };
+    };
+    //# sourceMappingURL=tools.js.map
+
+    // 默认参数
+    var GlobalVal = {
+        page: '',
+        sid: '',
+        sBegin: Date.now(),
+        _health: {
+            errcount: 0,
+            apisucc: 0,
+            apifail: 0
+        }
+    };
+    function setGlobalPage(page) {
+        GlobalVal.page = page;
+    }
+    function setGlobalSid() {
+        GlobalVal.sid = randomString();
+        GlobalVal.sBegin = Date.now();
+    }
+    function setGlobalHealth(type, success) {
+        if (type === 'error')
+            GlobalVal._health.errcount++;
+        if (type === 'api' && success)
+            GlobalVal._health.apisucc++;
+        if (type === 'api' && !success)
+            GlobalVal._health.apifail++;
+    }
+    function resetGlobalHealth() {
+        GlobalVal._health = {
+            errcount: 0,
+            apisucc: 0,
+            apifail: 0
+        };
+    }
+    //# sourceMappingURL=global.js.map
+
+    function getCommonMsg() {
+        var u = navigator.connection;
+        var data = {
+            t: '',
+            page: getPage(),
+            times: 1,
+            v: Config.appVersion,
+            token: Config.token,
+            e: Config.environment,
+            begin: new Date().getTime(),
+            uid: getUid(),
+            sid: GlobalVal.sid,
+            sr: screen.width + "x" + screen.height,
+            vp: getScreen(),
+            ct: u ? u.effectiveType : '',
+            ul: getLang(),
+            _v: '1.0.4',
+        };
+        return data;
+    }
+    // 获取页面
+    function getPage() {
+        if (GlobalVal.page)
+            return GlobalVal.page;
+        else {
+            return location.pathname.toLowerCase();
+        }
+    }
+    // 获取uid
+    function getUid() {
+        var uid = localStorage.getItem('bombay_uid') || '';
+        if (!uid) {
+            uid = randomString();
+            localStorage.setItem('bombay_uid', uid);
+        }
+        return uid;
+    }
+    // 获得sid
+    // TODO: 单页面
+    // function getSid() {
+    //   const date = new Date();
+    //   let sid = sessionStorage.getItem('bombay_sid') || '';
+    //   if (!sid) {
+    //       sid = randomString();
+    //       sessionStorage.setItem('bombay_sid', sid);
+    //   }
+    //   return sid;
+    // }
+    // 获取浏览器默认语言
+    function getLang() {
+        var lang = navigator.language || navigator.userLanguage; //常规浏览器语言和IE浏览器
+        lang = lang.substr(0, 2); //截取lang前2位字符
+        return lang;
+    }
+    function getScreen() {
+        var w = document.documentElement.clientWidth || document.body.clientWidth;
+        var h = document.documentElement.clientHeight || document.body.clientHeight;
+        return w + 'x' + h;
+    }
+    //# sourceMappingURL=index.js.map
+
+    // 上报
+    function report(e) {
+        "res" === e.t ?
+            send(e)
+            : "error" === e.t ? send(e)
+                : "behavior" === e.t ? send(e)
+                    : "health" === e.t && window && window.navigator && "function" == typeof window.navigator.sendBeacon ? sendBeacon(e)
+                        : send(e);
+        return this;
+    }
+    // post上报
+    function send(msg) {
+        var body = msg[msg.t];
+        delete msg[msg.t];
+        var url = Config.reportUrl + "?" + serialize(msg);
+        post(url, body);
+        // new Image().src = `${Config.reportUrl}?${serialize(msg)}`
+    }
+    function post(url, body) {
+        var XMLHttpRequest = window.__oXMLHttpRequest_ || window.XMLHttpRequest;
+        if (typeof XMLHttpRequest === 'function') {
+            try {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", url, !0);
+                xhr.setRequestHeader("Content-Type", "text/plain");
+                xhr.send(JSON.stringify(body));
+            }
+            catch (e) {
+                warn('[bombayjs] Failed to log, POST请求失败');
+            }
+        }
+        else {
+            warn('[bombayjs] Failed to log, 浏览器不支持XMLHttpRequest');
+        }
+    }
+    // 健康检查上报
+    function sendBeacon(e) {
+        "object" == typeof e && (e = serialize(e));
+        window && window.navigator && "function" == typeof window.navigator.sendBeacon
+            ? window.navigator.sendBeacon(Config.reportUrl, e)
+            : warn("[arms] navigator.sendBeacon not surported");
+    }
+    //# sourceMappingURL=reporter.js.map
+
+    // 处理pv
+    function handlePv() {
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, {
+            t: 'pv',
+            dt: document.title,
+            dl: location.href,
+            dr: document.referrer,
+            dpr: window.devicePixelRatio,
+            de: document.charset,
+        });
+        report(msg);
+    }
+    // 处理html node
+    var normalTarget = function (e) {
+        var t, n, r, a, i, o = [];
+        if (!e || !e.tagName)
+            return "";
+        if (o.push(e.tagName.toLowerCase()), e.id && o.push("#".concat(e.id)), (t = e.className) &&
+            "[object String]" === Object.prototype.toString.call(t))
+            for (n = t.split(/\s+/), i = 0; i < n.length; i++)
+                o.push(".".concat(n[i]));
+        var s = ["type", "name", "title", "alt"];
+        for (i = 0; i < s.length; i++)
+            r = s[i], (a = e.getAttribute(r)) && o.push("[".concat(r, '="').concat(a, '"]'));
+        return o.join("");
+    };
+    function handleClick(event) {
+        var target;
+        try {
+            target = event.target;
+        }
+        catch (u) {
+            target = "<unknown>";
+        }
+        if (0 !== target.length) {
+            var behavior = {
+                type: 'ui.click',
+                data: {
+                    message: function (e) {
+                        if (!e || 1 !== e.nodeType)
+                            return "";
+                        for (var t = e || null, n = [], r = 0, a = 0, i = " > ".length, o = ""; t && r++ < 5 && !("html" === (o = normalTarget(t)) || r > 1 && a + n.length * i + o.length >= 80);)
+                            n.push(o), a += o.length, t = t.parentNode;
+                        return n.reverse().join(" > ");
+                    }(target),
+                }
+            };
+            // 空信息不上报
+            if (!behavior.data.message)
+                return;
+            var commonMsg = getCommonMsg();
+            var msg = __assign({}, commonMsg, {
+                t: 'behavior',
+                behavior: behavior,
+            });
+            report(msg);
+        }
+    }
+    function handleBehavior(behavior) {
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, {
+            t: 'behavior',
+            behavior: behavior,
+        });
+        report(msg);
+    }
+    var TIMING_KEYS = ["", "fetchStart", "domainLookupStart", "domainLookupEnd", "connectStart",
+        "connectEnd", "requestStart", "responseStart", "responseEnd", "", "domInteractive", "",
+        "domContentLoadedEventEnd", "", "loadEventStart", "", "msFirstPaint",
+        "secureConnectionStart"];
+    // 处理性能
+    function handlePerf() {
+        var performance = window.performance;
+        if (!performance || 'object' !== typeof performance)
+            return;
+        var data = {}, timing = performance.timing || {}, now = Date.now(), type = 1;
+        // 根据PerformanceNavigationTiming计算更准确
+        if ("function" == typeof window.PerformanceNavigationTiming) {
+            var c = performance.getEntriesByType("navigation")[0];
+            c && (timing = c, type = 2);
+        }
+        // 计算data
+        each({
+            dns: [3, 2],
+            tcp: [5, 4],
+            ssl: [5, 17],
+            ttfb: [7, 6],
+            trans: [8, 7],
+            dom: [10, 8],
+            res: [14, 12],
+            firstbyte: [7, 2],
+            fpt: [8, 1],
+            tti: [10, 1],
+            ready: [12, 1],
+            load: [14, 1]
+        }, function (e, t) {
+            var r = timing[TIMING_KEYS[e[1]]], o = timing[TIMING_KEYS[e[0]]];
+            if (2 === type || r > 0 && o > 0) {
+                var c = Math.round(o - r);
+                c >= 0 && c < 36e5 && (data[t] = c);
+            }
+        });
+        var u = window.navigator.connection, f = performance.navigation || { type: undefined };
+        data.ct = u ? u.effectiveType || u.type : "";
+        var l = u ? u.downlink || u.downlinkMax || u.bandwidth || null : null;
+        if ((l = l > 999 ? 999 : l) && (data.bandwidth = l), data.navtype = 1 === f.type ? "Reload" : "Other", 1 === type && timing[TIMING_KEYS[16]] > 0 && timing[TIMING_KEYS[1]] > 0) {
+            var h = timing[TIMING_KEYS[16]] - timing[TIMING_KEYS[1]];
+            h >= 0 && h < 36e5 && (data.fpt = h);
+        }
+        1 === type && timing[TIMING_KEYS[1]] > 0
+            ? data.begin = timing[TIMING_KEYS[1]]
+            : 2 === type && data.load > 0 ? data.begin = now -
+                data.load : data.begin = now;
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, { t: 'perf' }, data);
+        report(msg);
+    }
+    // 处理hash变化
+    // 注意在路由栈的路由不会触发
+    function handleHashchange(e) {
+        var page = parseHash(location.hash);
+        page && setPage(page);
+    }
+    // 处理hash变化
+    function handleHistorystatechange(e) {
+        var page = parseHash(e.detail);
+        page && setPage(page);
+    }
+    function setPage(page) {
+        handleHealth();
+        setTimeout(function () {
+            setGlobalPage(page);
+            setGlobalSid();
+            handlePv();
+        }, 300);
+    }
+    function handleHealth() {
+        var healthy = GlobalVal._health.errcount ? 0 : 1;
+        var commonMsg = getCommonMsg();
+        var ret = __assign({}, commonMsg, GlobalVal._health, {
+            t: 'health',
+            healthy: healthy,
+            stay: Date.now() - GlobalVal.sBegin,
+        });
+        resetGlobalHealth();
+        report(ret);
+    }
+    // 处理错误
+    function handleErr(error) {
+        switch (error.type) {
+            case 'error':
+                error instanceof ErrorEvent ? reportCaughtError(error) : reportResourceError(error);
+                break;
+            case 'unhandledrejection':
+                reportPromiseError(error);
+                break;
+            // case 'httpError':
+            //     reportHttpError(error)
+            //   break;
+        }
+        setGlobalHealth('error');
+    }
+    // 捕获js异常
+    function reportCaughtError(error) {
+        var commonMsg = getCommonMsg();
+        var n = error.name || "CustomError", a = error.message || "", i = error.error.stack || "";
+        var msg = __assign({}, commonMsg, {
+            t: 'error',
+            st: 'caughterror',
+            cate: n,
+            msg: a && a.substring(0, 1e3),
+            detail: i && i.substring(0, 1e3),
+            file: error.filename || "",
+            line: error.lineno || "",
+            col: error.colno || "",
+        });
+        report(msg);
+    }
+    // 捕获资源异常
+    function reportResourceError(error) {
+        var commonMsg = getCommonMsg();
+        var target = error.target;
+        var msg = __assign({}, commonMsg, {
+            t: 'error',
+            st: 'resource',
+            msg: target.outerHTML,
+            file: target.src,
+            stack: target.localName.toUpperCase(),
+        });
+        report(msg);
+    }
+    // 捕获promise异常
+    function reportPromiseError(error) {
+        console.log(error);
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, {
+            t: 'error',
+            st: 'promise',
+            msg: error.reason,
+        });
+        report(msg);
+    }
+    function handleResource() {
+        var performance = window.performance;
+        if (!performance || "object" != typeof performance || "function" != typeof performance.getEntriesByType)
+            return null;
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, {
+            dom: 0,
+            load: 0,
+            t: 'res',
+            res: '',
+        });
+        var i = performance.timing || {}, o = performance.getEntriesByType("resource") || [];
+        if ("function" == typeof window.PerformanceNavigationTiming) {
+            var s = performance.getEntriesByType("navigation")[0];
+            s && (i = s);
+        }
+        each({
+            dom: [10, 8],
+            load: [14, 1]
+        }, function (e, t) {
+            var r = i[TIMING_KEYS[e[1]]], o = i[TIMING_KEYS[e[0]]];
+            if (r > 0 && o > 0) {
+                var s = Math.round(o - r);
+                s >= 0 && s < 36e5 && (msg[t] = s);
+            }
+        });
+        // 过滤忽略的url
+        o = o.filter(function (item) {
+            var include = getConfig('ignore').ignoreApis.findIndex(function (ignoreApi) { return item.name.indexOf(ignoreApi) > -1; });
+            return include > -1 ? false : true;
+        });
+        msg.res = JSON.stringify(o);
+        report(msg);
+    }
+    function handleApi(url, success, time, code, msg, beigin) {
+        if (!url) {
+            warn('[retcode] api is null');
+            return;
+        }
+        // 设置健康状态
+        setGlobalHealth('api', success);
+        var commonMsg = getCommonMsg();
+        var apiMsg = __assign({}, commonMsg, {
+            t: 'api',
+            beigin: beigin,
+            url: url,
+            success: success,
+            time: time,
+            code: code,
+            msg: msg,
+        });
+        // 过滤忽略的url
+        var include = getConfig('ignore').ignoreApis.findIndex(function (ignoreApi) { return url.indexOf(ignoreApi) > -1; });
+        if (include > -1)
+            return;
+        report(apiMsg);
+    }
+    function handleSum(key, val) {
+        if (val === void 0) { val = 1; }
+        var commonMsg = getCommonMsg();
+        var g = splitGroup(key);
+        var ret = __assign({}, commonMsg, g, {
+            t: 'sum',
+            val: val,
+        });
+        report(ret);
+    }
+    function handleAvg(key, val) {
+        if (val === void 0) { val = 1; }
+        var commonMsg = getCommonMsg();
+        var g = splitGroup(key);
+        var ret = __assign({}, commonMsg, g, {
+            t: 'avg',
+            val: val,
+        });
+        report(ret);
+    }
+    function handleMsg(key) {
+        var commonMsg = getCommonMsg();
+        var g = splitGroup(key);
+        var ret = __assign({}, commonMsg, {
+            t: 'msg',
+            group: g.group,
+            msg: g.key.substr(0, Config.maxLength)
+        });
+        report(ret);
+    }
+    // export function handlePercent(key: string, val: number = 1) {
+    //   let commonMsg = getCommonMsg()
+    //   let g = splitGroup(key)
+    //   let ret: sumMsg = {
+    //     ...commonMsg,
+    //     ...g,
+    //     ...{
+    //       t: 'avg',
+    //       val,
+    //     }
+    //   }
+    //   report(ret)
+    // }
+    //# sourceMappingURL=handlers.js.map
+
+    // hack console
+    function hackConsole() {
+        if (window && window.console) {
+            for (var e = ["debug", "info", "warn", "log", "error"], n = 0; e.length; n++) {
+                var r = e[n];
+                var action = window.console[r];
+                if (!window.console[r])
+                    return;
+                (function (r, action) {
+                    window.console[r] = function () {
+                        var i = Array.prototype.slice.apply(arguments);
+                        var s = {
+                            type: "console",
+                            data: {
+                                level: r,
+                                message: JSON.stringify(i),
+                            }
+                        };
+                        handleBehavior(s);
+                        action && action.apply(null, i);
+                    };
+                })(r, action);
+            }
+        }
+    }
+    /**
+     * hack pushstate replaceState
+     * 派送historystatechange historystatechange事件
+     * @export
+     * @param {('pushState' | 'replaceState')} e
+     */
+    function hackState(e) {
+        var t = history[e];
+        "function" == typeof t && (history[e] = function (n, i, s) {
+            var c = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments), u = location.href, f = t.apply(history, c);
+            if (!s || "string" != typeof s)
+                return f;
+            if (s === u)
+                return f;
+            try {
+                var l = u.split("#"), h = s.split("#"), p = parseUrl(l[0]), d = parseUrl(h[0]), g = l[1] && l[1].replace(/^\/?(.*)/, "$1"), v = h[1] && h[1].replace(/^\/?(.*)/, "$1");
+                p !== d ? dispatchCustomEvent("historystatechange", d) : g !== v && dispatchCustomEvent("historystatechange", v);
+            }
+            catch (m) {
+                warn("[retcode] error in " + e + ": " + m);
+            }
+            return f;
+        }, history[e].toString = fnToString(e));
+    }
+    function hackhook() {
+        hackFetch();
+        hackAjax();
+    }
+    function hackFetch() {
+        if ("function" == typeof window.fetch) {
+            var __oFetch_ = window.fetch;
+            window['__oFetch_'] = __oFetch_;
+            window.fetch = function (t, o) {
+                var a = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments);
+                var begin = Date.now(), url = (t && "string" != typeof t ? t.url : t) || "", page = parseUrl(url);
+                if (!page)
+                    return __oFetch_.apply(window, a);
+                return __oFetch_.apply(window, a).then(function (e) {
+                    var response = e.clone(), headers = response.headers;
+                    if (headers && 'function' === typeof headers.get) {
+                        var ct = headers.get('content-type');
+                        if (ct && !/(text)|(json)/.test(ct))
+                            return e;
+                    }
+                    var time = Date.now() - begin;
+                    response.text().then(function (res) {
+                        if (response.ok) {
+                            handleApi(page, !0, time, status, res.substr(0, 1000) || '', begin);
+                        }
+                        else {
+                            handleApi(page, !1, time, status, res.substr(0, 1000) || '', begin);
+                        }
+                    });
+                    return e;
+                });
+            };
+        }
+    }
+    // 如果返回过长，会被截断，最长1000个字符
+    function hackAjax() {
+        if ("function" == typeof window.XMLHttpRequest) {
+            var begin = 0, page = '';
+            var __oXMLHttpRequest_ = window.XMLHttpRequest;
+            window['__oXMLHttpRequest_'] = __oXMLHttpRequest_;
+            window.XMLHttpRequest = function (t) {
+                var xhr = new __oXMLHttpRequest_(t);
+                if (!xhr.addEventListener)
+                    return xhr;
+                var open = xhr.open, send = xhr.send;
+                xhr.open = function (method, url) {
+                    var a = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments);
+                    url = url;
+                    page = parseUrl(url);
+                    open.apply(xhr, a);
+                };
+                xhr.send = function () {
+                    begin = Date.now();
+                    var a = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments);
+                    send.apply(xhr, a);
+                };
+                xhr.onreadystatechange = function () {
+                    if (page && 4 === xhr.readyState) {
+                        var time = Date.now() - begin;
+                        if (xhr.status >= 200 && xhr.status <= 299) {
+                            var status = xhr.status || 200;
+                            if ("function" == typeof xhr.getResponseHeader) {
+                                var r = xhr.getResponseHeader("Content-Type");
+                                if (r && !/(text)|(json)/.test(r))
+                                    return;
+                            }
+                            handleApi(page, !0, time, status, xhr.responseText.substr(0, Config.maxLength) || '', begin);
+                        }
+                        else {
+                            handleApi(page, !1, time, status || 'FAILED', xhr.responseText.substr(0, Config.maxLength) || '', begin);
+                        }
+                    }
+                };
+                return xhr;
+            };
+        }
+    }
+    function hackOnpopstate() {
+        window['__onpopstate_'] = window.onpopstate;
+        window.onpopstate = function () {
+            for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++)
+                a[o] = arguments[o];
+            var s = window.location.href;
+            setPage(s);
+            if (window.__onpopstate_)
+                return window.__onpopstate_.apply(this, a);
+        };
+    }
+    //# sourceMappingURL=hack.js.map
+
+    var Bombay = /** @class */ (function () {
+        function Bombay(options, fn) {
+            this.init(options);
+        }
+        Bombay.prototype.init = function (options) {
+            // 没有token,则不监听任何事件
+            if (options && !options.token) {
+                console.warn('请输入一个token');
+                return;
+            }
+            setConfig(options);
+            setGlobalPage(location.pathname.toLowerCase());
+            setGlobalSid();
+            Config.autoSendPv && this.sendPv();
+            Config.isPage && this.sendPerf();
+            Config.enableSPA && this.addListenRouterChange();
+            Config.isError && this.addListenJs();
+            Config.isAjax && this.addListenAjax();
+            Config.isRecord && this.addRrweb();
+            // 行为是一个页面内的操作
+            Config.isBehavior && this.addListenBehavior();
+            Config.isResource && this.sendResource();
+            // 绑定全局变量
+            window.__bb = this;
+            this.addListenUnload();
+            hackOnpopstate();
+        };
+        Bombay.prototype.sendPv = function () {
+            handlePv();
+        };
+        Bombay.prototype.sendPerf = function () {
+            handlePerf();
+        };
+        // 发送资源
+        Bombay.prototype.sendResource = function () {
+            'complete' === window.document.readyState ? handleResource() : this.addListenResource();
+        };
+        // 监听资源
+        Bombay.prototype.addListenResource = function () {
+            on('load', handleResource);
+        };
+        // 监听行为
+        Bombay.prototype.addListenBehavior = function () {
+            Config.behavior.console && hackConsole();
+            Config.behavior.click && this.addListenClick();
+        };
+        // 监听click
+        Bombay.prototype.addListenClick = function () {
+            on('click', handleClick);
+            on('keypress', handleClick);
+        };
+        // 监听路由
+        Bombay.prototype.addListenRouterChange = function () {
+            hackState('pushState');
+            hackState('replaceState');
+            on('hashchange', handleHashchange);
+            on('historystatechange', handleHistorystatechange);
+        };
+        Bombay.prototype.addListenJs = function () {
+            // js错误或静态资源加载错误
+            on('error', handleErr);
+            //promise错误
+            on('unhandledrejection', handleErr);
+            // window.addEventListener('rejectionhandled', rejectionhandled, true);
+        };
+        Bombay.prototype.addListenAjax = function () {
+            hackhook();
+        };
+        // beforeunload
+        Bombay.prototype.addListenUnload = function () {
+            on('beforeunload', handleHealth);
+        };
+        Bombay.prototype.addRrweb = function () {
+        };
+        // 移除路由
+        Bombay.prototype.removeListenRouterChange = function () {
+            off('hashchange', handleHashchange);
+            off('historystatechange', handleHistorystatechange);
+        };
+        Bombay.prototype.removeListenJs = function () {
+            off('error', handleErr);
+            off('unhandledrejection', handleErr);
+        };
+        // 监听资源
+        Bombay.prototype.removeListenResource = function () {
+            off('beforeunload', handleHealth);
+        };
+        Bombay.prototype.removeListenAjax = function () {
+        };
+        Bombay.prototype.removeListenUnload = function () {
+            off('load', handleResource);
+        };
+        Bombay.prototype.removeRrweb = function () {
+        };
+        Bombay.prototype.sum = function (key, val) {
+            handleSum(key, val);
+        };
+        Bombay.prototype.avg = function (key, val) {
+            handleAvg(key, val);
+        };
+        Bombay.prototype.msg = function (key) {
+            handleMsg(key);
+        };
+        Bombay.prototype.api = function (api, success, time, code, msg) {
+            handleApi(api, success, time, code, msg, Date.now());
+        };
+        Bombay.prototype.destroy = function () {
+            Config.enableSPA && this.removeListenRouterChange();
+            Config.isError && this.removeListenJs();
+            Config.isAjax && this.removeListenAjax();
+            Config.isRecord && this.removeRrweb();
+            Config.isResource && this.removeListenResource();
+            this.removeListenResource();
+        };
+        return Bombay;
+    }());
+
+    return Bombay;
+
+}));

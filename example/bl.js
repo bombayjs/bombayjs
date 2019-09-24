@@ -168,7 +168,6 @@
                       c3: a.c3
                   }), function (e, t) {
                       var n; {
-                        // debugger
                           if ("error" !== t.t || !(n = e.$a1[0]) || "error" !== n.t || t.msg !== n.msg) {
                               if ("behavior" === t.t) {
                                   var a = e.$a1 && e.$a1.length;
@@ -413,7 +412,6 @@
           u = /^(error|api|speed|sum|avg|percent|custom|msg|setPage|setConfig|behavior|performance)$/,
           // TODO:e: config
           f = function (e) {
-            // debugger
               var t = this;
               return a.call(t, e)
               , t._initialPage = e.page && r.$a8(e.page, [], e.page + "") || null
@@ -473,7 +471,6 @@
           constructor: f,
           _super: a,
           $a2: function (e) {
-            // debugger
               var t = this;
               if (t.hasReady) return e();
               "complete" === c.readyState ? (t.hasReady = !0, e()) : r.on(s, "load",
@@ -755,7 +752,6 @@
                   }
               },
               g = function (e) {
-                // debugger
                   var t = e._conf.uid || d("_nk_") || d("_bl_uid");
                   if (!t) {
                       t = a.uu();
@@ -865,7 +861,6 @@
                   if (e.$ba) return e;
                   var t = e._conf;
                   return a.on(n, "beforeunload", function () {
-                    window.confirm('ok?')
                       e.$au(0)
                   }), e.$aw(t.enableSPA), e.activeErrHandler(!1), e.$ba = !0, e
               }
@@ -1399,15 +1394,24 @@
               } catch (h) {}
               return this._lg("api", e, e.success && this.getConfig("sample"))
           },
+          // e: s+数字   t: number  n
           speed: function (e, t, n) {
               var a = this,
                   i = this.getConfig("startTime") || this._startTime;
-              return /^s(\d|1[0])$/.test(e) ? (t = "number" != typeof t ? Date.now() - i : t >=
-                  i ? t - i : t, a.$b6 = a.$b6 || {}, a.$b6[e] = t, a.$b6.begin = i,
-                  clearTimeout(a.$b7), a.$b7 = setTimeout(function () {
-                      n || (a.$b6.page = a.$a7(!0)), a._lg("speed", a.$b6), a.$b6 =
-                          null
-                  }, 5e3), a) : (r.warn("[retcode] invalid point: " + e), a)
+              return /^s(\d|1[0])$/.test(e) 
+              ? (
+                t = "number" != typeof t ? Date.now() - i : t >= i ? t - i : t
+                , a.$b6 = a.$b6 || {}
+                , a.$b6[e] = t
+                , a.$b6.begin = i
+                , clearTimeout(a.$b7)
+                , a.$b7 = setTimeout(function () {
+                      n || (a.$b6.page = a.$a7(!0))
+                      , a._lg("speed", a.$b6)
+                      , a.$b6 = null
+                  }, 5e3)
+                , a
+                ) : (r.warn("[retcode] invalid point: " + e), a)
           },
           performance: function (e) {
               if (e) {
