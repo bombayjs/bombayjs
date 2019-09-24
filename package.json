@@ -4,7 +4,8 @@
   "description": "前端监控sdk",
   "main": "dist/bombay.js",
   "scripts": {
-    "build": "rollup -c -w"
+    "dev": "rollup -c -w",
+    "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production"
   },
   "repository": {
     "type": "git",

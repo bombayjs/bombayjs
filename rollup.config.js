@@ -28,6 +28,6 @@ export default {
     babel({
       exclude: "node_modules/**"
     }),
-    // uglify()
+    process.env.BUILD === 'production' ? uglify() : null
   ]
 };
