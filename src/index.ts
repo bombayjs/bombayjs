@@ -1,7 +1,7 @@
 import { Config, setConfig } from './config'
 import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, handleHealth, handleApi,setPage, } from './handlers'
 import {on,off,parseHash} from './utils/tools'
-import { hackState, hackConsole, hackhook, hackOnpopstate, } from './hack'
+import { hackState, hackConsole, hackhook, } from './hack'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, } from './config/global'
 
 export default class Bombay {
@@ -32,7 +32,6 @@ export default class Bombay {
     // 绑定全局变量
     window.__bb = this
     this.addListenUnload()
-    hackOnpopstate()
   }
 
   sendPerf() {
@@ -66,7 +65,7 @@ export default class Bombay {
     hackState('pushState')
     hackState('replaceState')
     on('hashchange', handleHashchange)
-    on('historystatechange', handleHistorystatechange)
+    on('historystatechanged', handleHistorystatechange)
   }
 
   addListenJs() {
@@ -95,8 +94,7 @@ export default class Bombay {
   // 移除路由
   removeListenRouterChange() {
     off('hashchange', handleHashchange)
-    off('historystatechange', handleHistorystatechange)
-    
+    off('historystatechanged', handleHistorystatechange)
   }
 
   removeListenJs() {

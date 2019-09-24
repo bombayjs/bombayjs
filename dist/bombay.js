@@ -623,6 +623,7 @@
     //   }
     //   report(ret)
     // }
+    //# sourceMappingURL=handlers.js.map
 
     // hack console
     // "debug", "info", "warn", "log", "error"
@@ -659,6 +660,7 @@
     function hackState(e) {
         var t = history[e];
         "function" == typeof t && (history[e] = function (n, i, s) {
+            !window['__bb_onpopstate_'] && hackOnpopstate(); // 调用pushState或replaceState时hack Onpopstate
             var c = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments), u = location.href, f = t.apply(history, c);
             if (!s || "string" != typeof s)
                 return f;
@@ -666,7 +668,7 @@
                 return f;
             try {
                 var l = u.split("#"), h = s.split("#"), p = parseUrl(l[0]), d = parseUrl(h[0]), g = l[1] && l[1].replace(/^\/?(.*)/, "$1"), v = h[1] && h[1].replace(/^\/?(.*)/, "$1");
-                p !== d ? dispatchCustomEvent("historystatechange", d) : g !== v && dispatchCustomEvent("historystatechange", v);
+                p !== d ? dispatchCustomEvent("historystatechanged", d) : g !== v && dispatchCustomEvent("historystatechanged", v);
             }
             catch (m) {
                 warn("[retcode] error in " + e + ": " + m);
@@ -752,17 +754,16 @@
         }
     }
     function hackOnpopstate() {
-        window['__onpopstate_'] = window.onpopstate;
+        window['__bb_onpopstate_'] = window.onpopstate;
         window.onpopstate = function () {
             for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++)
                 a[o] = arguments[o];
-            var s = window.location.href;
-            setPage(s, false);
-            if (window.__onpopstate_)
-                return window.__onpopstate_.apply(this, a);
+            var page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase();
+            setPage(page, false);
+            if (window.__bb_onpopstate_)
+                return window.__bb_onpopstate_.apply(this, a);
         };
     }
-    //# sourceMappingURL=hack.js.map
 
     var Bombay = /** @class */ (function () {
         function Bombay(options, fn) {
@@ -788,7 +789,6 @@
             // 绑定全局变量
             window.__bb = this;
             this.addListenUnload();
-            hackOnpopstate();
         };
         Bombay.prototype.sendPerf = function () {
             handlePerf();
@@ -816,7 +816,7 @@
             hackState('pushState');
             hackState('replaceState');
             on('hashchange', handleHashchange);
-            on('historystatechange', handleHistorystatechange);
+            on('historystatechanged', handleHistorystatechange);
         };
         Bombay.prototype.addListenJs = function () {
             // js错误或静态资源加载错误
@@ -838,7 +838,7 @@
         // 移除路由
         Bombay.prototype.removeListenRouterChange = function () {
             off('hashchange', handleHashchange);
-            off('historystatechange', handleHistorystatechange);
+            off('historystatechanged', handleHistorystatechange);
         };
         Bombay.prototype.removeListenJs = function () {
             off('error', handleErr);
@@ -877,7 +877,6 @@
         };
         return Bombay;
     }());
-    //# sourceMappingURL=index.js.map
 
     return Bombay;
 

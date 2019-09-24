@@ -1,4 +1,4 @@
-import { parseUrl, fnToString, warn, dispatchCustomEvent, on, } from './utils/tools'
+import { parseUrl, fnToString, warn, dispatchCustomEvent, on, parseHash } from './utils/tools'
 import { handleBehavior, handleApi, setPage, } from './handlers'
 import { Config } from './config'
 
@@ -37,8 +37,8 @@ export function hackConsole() {
 export function hackState(e: 'pushState' | 'replaceState') {
   var t = history[e]
   "function" == typeof t && (history[e] = function (n, i, s) {
-    var c = 1 === arguments.length ? [arguments[0]] : Array.apply(null,
-            arguments),
+    !window['__bb_onpopstate_'] && hackOnpopstate(); // 调用pushState或replaceState时hack Onpopstate
+    var c = 1 === arguments.length ? [arguments[0]] : Array.apply(null, arguments),
         u = location.href,
         f = t.apply(history, c);
     if (!s || "string" != typeof s) return f;
@@ -50,8 +50,7 @@ export function hackState(e: 'pushState' | 'replaceState') {
             d = parseUrl(h[0]),
             g = l[1] && l[1].replace(/^\/?(.*)/, "$1"),
             v = h[1] && h[1].replace(/^\/?(.*)/, "$1");
-        p !== d ? dispatchCustomEvent("historystatechange", d) : g !== v && dispatchCustomEvent(
-            "historystatechange", v)
+        p !== d ? dispatchCustomEvent("historystatechanged", d) : g !== v && dispatchCustomEvent("historystatechanged", v)
     } catch (m) {
       warn("[retcode] error in " + e + ": " + m)
     }
@@ -143,11 +142,11 @@ function hackAjax() {
 }
 
 export function hackOnpopstate() {
-  window['__onpopstate_'] = window.onpopstate
+  window['__bb_onpopstate_'] = window.onpopstate
   window.onpopstate = function () {
     for (var r = arguments.length, a = new Array(r), o = 0; o < r; o++) a[o] = arguments[o];
-    var s = window.location.href;
-    setPage(s, false)
-    if (window.__onpopstate_) return window.__onpopstate_.apply(this, a)
+    let page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase()
+    setPage(page, false)
+    if (window.__bb_onpopstate_) return window.__bb_onpopstate_.apply(this, a)
   }
 }
