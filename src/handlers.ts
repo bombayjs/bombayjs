@@ -147,13 +147,13 @@ export function handlePerf(): void {
 // 处理hash变化
 // 注意在路由栈的路由不会触发
 export function handleHashchange(e): void {
-  const page = parseHash(location.hash)
+  let page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase()
   page && setPage(page)
 }
 
 // 处理hash变化
 export function handleHistorystatechange(e): void {
-  const page = parseHash(e.detail)
+  let page = Config.enableSPA ? parseHash(e.detail.toLowerCase()) : e.detail.toLowerCase()
   page && setPage(page)
 }
 

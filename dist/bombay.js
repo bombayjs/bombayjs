@@ -64,7 +64,7 @@
             ignoreApis: ['/api/v1/report/web', 'livereload.js?snipver=1', '/sockjs-node/info'],
         },
         behavior: {
-            console: true,
+            console: ['log', 'error'],
             click: true,
         },
         // 最长上报数据长度
@@ -439,12 +439,12 @@
     // 处理hash变化
     // 注意在路由栈的路由不会触发
     function handleHashchange(e) {
-        var page = parseHash(location.hash);
+        var page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase();
         page && setPage(page);
     }
     // 处理hash变化
     function handleHistorystatechange(e) {
-        var page = parseHash(e.detail);
+        var page = Config.enableSPA ? parseHash(e.detail.toLowerCase()) : e.detail.toLowerCase();
         page && setPage(page);
     }
     function setPage(page) {
@@ -624,9 +624,10 @@
     //# sourceMappingURL=handlers.js.map
 
     // hack console
+    // "debug", "info", "warn", "log", "error"
     function hackConsole() {
         if (window && window.console) {
-            for (var e = ["debug", "info", "warn", "log", "error"], n = 0; e.length; n++) {
+            for (var e = Config.behavior.console, n = 0; e.length; n++) {
                 var r = e[n];
                 var action = window.console[r];
                 if (!window.console[r])
@@ -773,7 +774,8 @@
                 return;
             }
             setConfig(options);
-            setGlobalPage(location.pathname.toLowerCase());
+            var page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase();
+            setGlobalPage(page);
             setGlobalSid();
             Config.autoSendPv && this.sendPv();
             Config.isPage && this.sendPerf();
@@ -805,7 +807,7 @@
         };
         // 监听行为
         Bombay.prototype.addListenBehavior = function () {
-            Config.behavior.console && hackConsole();
+            hackConsole();
             Config.behavior.click && this.addListenClick();
         };
         // 监听click
@@ -833,6 +835,7 @@
         // beforeunload
         Bombay.prototype.addListenUnload = function () {
             on('beforeunload', handleHealth);
+            this.destroy();
         };
         Bombay.prototype.addRrweb = function () {
         };

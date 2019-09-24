@@ -3,9 +3,10 @@ import { handleBehavior, handleApi, setPage, } from './handlers'
 import { Config } from './config'
 
 // hack console
+// "debug", "info", "warn", "log", "error"
 export function hackConsole() {
   if (window && window.console) {
-    for (var e = ["debug", "info", "warn", "log", "error"], n = 0; e.length; n++) {
+    for (var e = Config.behavior.console, n = 0; e.length; n++) {
       var r = e[n];
       var action = window.console[r]
       if (!window.console[r]) return;

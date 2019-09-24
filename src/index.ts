@@ -1,6 +1,6 @@
 import { Config, setConfig } from './config'
 import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, handleHealth, handleApi, } from './handlers'
-import {on,off} from './utils/tools'
+import {on,off,parseHash} from './utils/tools'
 import { hackState, hackConsole, hackhook, hackOnpopstate, } from './hack'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, } from './config/global'
 
@@ -17,7 +17,8 @@ export default class Bombay {
       return
     }
     setConfig(options)
-    setGlobalPage(location.pathname.toLowerCase())
+    let page = Config.enableSPA ? parseHash(location.hash.toLowerCase()) : location.pathname.toLowerCase()
+    setGlobalPage(page)
     setGlobalSid()
 
     Config.autoSendPv && this.sendPv();
@@ -56,7 +57,7 @@ export default class Bombay {
 
   // 监听行为
   addListenBehavior() {
-    Config.behavior.console && hackConsole()
+    hackConsole()
     Config.behavior.click && this.addListenClick()
   }
 
@@ -90,6 +91,7 @@ export default class Bombay {
   // beforeunload
   addListenUnload() {
     on('beforeunload', handleHealth)
+    this.destroy()
   }
 
   addRrweb() {
