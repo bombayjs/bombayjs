@@ -52,7 +52,7 @@ new Bombay({
 ```
 
 ## 配置
-```json
+```js
 {
   // 上报地址
   reportUrl: 'http://localhost:10000',
