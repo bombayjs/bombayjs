@@ -86,7 +86,7 @@ new Bombay({
     ignoreApis: ['/api/v1/report/web', 'livereload.js?snipver=1', '/sockjs-node/info'],
   },
   behavior: {
-    console: true,
+    console: ['log', 'error'], // 取值可以是"debug", "info", "warn", "log", "error"
     click: true,
   },
   // 最长上报数据长度
