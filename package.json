@@ -1,6 +1,6 @@
 {
   "name": "bombayjs",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "前端监控sdk",
   "main": "dist/bombay.js",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/abc-club/bombayjs"
+    "url": "https://github.com/bombayjs/bombayjs"
   },
   "author": "https://github.com/aoping",
   "license": "ISC",
