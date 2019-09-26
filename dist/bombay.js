@@ -229,7 +229,7 @@
             vp: getScreen(),
             ct: u ? u.effectiveType : '',
             ul: getLang(),
-            _v: '1.0.4',
+            _v: '1.0.5',
         };
         return data;
     }
@@ -623,7 +623,6 @@
     //   }
     //   report(ret)
     // }
-    //# sourceMappingURL=handlers.js.map
 
     // hack console
     // "debug", "info", "warn", "log", "error"
@@ -764,6 +763,7 @@
                 return window.__bb_onpopstate_.apply(this, a);
         };
     }
+    //# sourceMappingURL=hack.js.map
 
     var Bombay = /** @class */ (function () {
         function Bombay(options, fn) {
@@ -877,6 +877,7 @@
         };
         return Bombay;
     }());
+    //# sourceMappingURL=index.js.map
 
     return Bombay;
 

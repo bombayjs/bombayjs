@@ -45,6 +45,9 @@ npm i bombayjs -S
 ```
 
 ```js
+import Bombay from 'bombayjs'
+或 var Bombay = require('bombayjs')
+
 new Bombay({
   token: 'xxxx',
   reportUrl: 'http://127.0.0.1:7002/api/v1/report/web'
