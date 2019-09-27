@@ -13,7 +13,7 @@
   index
   <script>
     new Bombay({
-      enableSPA: false,
+      enableSPA: true,
       token: 'Pj5YhcR1568173556213',
       reportUrl: 'http://127.0.0.1:7002/api/v1/report/web'
     })
@@ -58,11 +58,12 @@
       fetch('http://localhost:5000/example/zan1')
 
     function C() {
-      let stateObj = {
-        foo: "bar",
-        };
+      location.href='#a'
+      // let stateObj = {
+      //   foo: "bar",
+      //   };
 
-        history.pushState(stateObj, "page 2", "bar.html");
+      //   history.pushState(stateObj, "page 2", "bar.html");
       // console.log('a', 'b')
       // $.ajax({
       //   url: 'http://localhost:5000/example/zan'

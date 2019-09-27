@@ -18,7 +18,9 @@ export function send(msg: ReportData) {
   var body = msg[msg.t]
   delete msg[msg.t]
   var url = `${Config.reportUrl}?${serialize(msg)}`
-  post(url, body)
+  post(url, {
+    [msg.t]: body
+  })
   // new Image().src = `${Config.reportUrl}?${serialize(msg)}`
 }
 
@@ -41,7 +43,8 @@ export function post(url, body) {
 // 健康检查上报
 export function sendBeacon(e:any) {
   "object" == typeof e && (e = serialize(e));
+  e = `${Config.reportUrl}?${e}`
   window && window.navigator && "function" == typeof window.navigator.sendBeacon 
-    ? window.navigator.sendBeacon(Config.reportUrl, e) 
+    ? window.navigator.sendBeacon(e) 
     : warn("[arms] navigator.sendBeacon not surported")
 }

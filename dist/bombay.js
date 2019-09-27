@@ -229,7 +229,7 @@
             vp: getScreen(),
             ct: u ? u.effectiveType : '',
             ul: getLang(),
-            _v: '1.0.5',
+            _v: '1.0.6',
         };
         return data;
     }
@@ -286,10 +286,13 @@
     }
     // post上报
     function send(msg) {
+        var _a;
         var body = msg[msg.t];
         delete msg[msg.t];
         var url = Config.reportUrl + "?" + serialize(msg);
-        post(url, body);
+        post(url, (_a = {},
+            _a[msg.t] = body,
+            _a));
         // new Image().src = `${Config.reportUrl}?${serialize(msg)}`
     }
     function post(url, body) {
@@ -312,11 +315,11 @@
     // 健康检查上报
     function sendBeacon(e) {
         "object" == typeof e && (e = serialize(e));
+        e = Config.reportUrl + "?" + e;
         window && window.navigator && "function" == typeof window.navigator.sendBeacon
-            ? window.navigator.sendBeacon(Config.reportUrl, e)
+            ? window.navigator.sendBeacon(e)
             : warn("[arms] navigator.sendBeacon not surported");
     }
-    //# sourceMappingURL=reporter.js.map
 
     // 处理pv
     function handlePv() {
@@ -623,6 +626,7 @@
     //   }
     //   report(ret)
     // }
+    //# sourceMappingURL=handlers.js.map
 
     // hack console
     // "debug", "info", "warn", "log", "error"
