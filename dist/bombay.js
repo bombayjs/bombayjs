@@ -229,7 +229,7 @@
             vp: getScreen(),
             ct: u ? u.effectiveType : '',
             ul: getLang(),
-            _v: '1.0.6',
+            _v: '1.0.7',
         };
         return data;
     }
