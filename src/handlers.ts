@@ -199,8 +199,29 @@ export function handleHistorystatechange(e): void {
   page && setPage(page, false)
 }
 
+// 处理pv
+export function handleNavigation(page): void {
+  let commonMsg = getCommonMsg()
+  let msg: behaviorMsg = {
+    ...commonMsg,
+    ...{
+      t: 'behavior',
+      behavior: {
+        type: 'navigation',
+        data: {
+          from: commonMsg.page,
+          to: page,
+        },
+      }
+    }
+  }
+  report(msg)
+}
+
+
 export function setPage(page, isFirst?: boolean) {
   !isFirst && handleHealth()
+  handleNavigation(page)
   setTimeout(()=> {
     setGlobalPage(page)
     setGlobalSid()

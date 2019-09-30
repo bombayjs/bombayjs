@@ -491,8 +491,24 @@
         var page = Config.enableSPA ? parseHash(e.detail.toLowerCase()) : e.detail.toLowerCase();
         page && setPage(page, false);
     }
+    // 处理pv
+    function handleNavigation(page) {
+        var commonMsg = getCommonMsg();
+        var msg = __assign({}, commonMsg, {
+            t: 'behavior',
+            behavior: {
+                type: 'navigation',
+                data: {
+                    from: commonMsg.page,
+                    to: page,
+                },
+            }
+        });
+        report(msg);
+    }
     function setPage(page, isFirst) {
         !isFirst && handleHealth();
+        handleNavigation(page);
         setTimeout(function () {
             setGlobalPage(page);
             setGlobalSid();
