@@ -1,4 +1,5 @@
 import {randomString, } from '../utils/tools'
+import { insertCss, removeCss } from '../handlers'
 
 // 默认参数
 export let GlobalVal = {
@@ -9,7 +10,9 @@ export let GlobalVal = {
     errcount: 0,
     apisucc: 0,
     apifail: 0
-  } 
+  },
+  circle: false,
+  cssInserted: false,
 }
 
 export function setGlobalPage(page) {

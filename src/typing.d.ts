@@ -11,3 +11,9 @@ interface Window {
   __bb: any;
   __bb_onpopstate_: any;
 }
+
+interface HTMLStyleElement {
+  styleSheet: {
+    cssText: string
+  }
+}

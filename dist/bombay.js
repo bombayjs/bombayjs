@@ -187,7 +187,9 @@
             errcount: 0,
             apisucc: 0,
             apifail: 0
-        }
+        },
+        circle: false,
+        cssInserted: false,
     };
     function setGlobalPage(page) {
         GlobalVal.page = page;
@@ -364,6 +366,24 @@
         return ret.reverse().join(" > ");
     };
     function handleClick(event) {
+        // 正在圈选
+        if (GlobalVal.circle) {
+            var target_1 = event.target;
+            var clsLength = target_1.className.split(/\s+/);
+            var path = getElmPath(event.target);
+            if (clsLength > 1) {
+                path = path.replace('.bombayjs-circle-active', '');
+            }
+            else {
+                path = path.replace('..bombayjs-circle-active', '');
+            }
+            window.parent.postMessage({
+                path: path,
+                page: GlobalVal.page,
+            }, '*');
+            event.stopPropagation();
+            return;
+        }
         var target;
         try {
             target = event.target;
@@ -680,6 +700,56 @@
     //   }
     //   report(ret)
     // }
+    function handleHover(e) {
+        var cls = document.getElementsByClassName('bombayjs-circle-active');
+        if (cls.length > 0) {
+            for (var i = 0; i < cls.length; i++) {
+                cls[i].className = cls[i].className.replace(/ bombayjs-circle-active/g, '');
+            }
+        }
+        e.target.className += ' bombayjs-circle-active';
+    }
+    function insertCss() {
+        var content = '.bombayjs-circle-active{border: #ff0000 2px solid;}';
+        var style = document.createElement("style");
+        style.type = "text/css";
+        style.id = 'bombayjs-circle-css';
+        try {
+            style.appendChild(document.createTextNode(content));
+        }
+        catch (ex) {
+            style.styleSheet.cssText = content; //针对IE
+        }
+        var head = document.getElementsByTagName("head")[0];
+        head.appendChild(style);
+    }
+    function removeCss() {
+        var style = document.getElementById('bombayjs-circle-css');
+        style.parentNode.removeChild(style);
+    }
+    function listenCircleListener() {
+        insertCss();
+        GlobalVal.cssInserted = true;
+        GlobalVal.circle = true;
+        on('mouseover', handleHover);
+    }
+    function removeCircleListener() {
+        removeCss();
+        GlobalVal.cssInserted = false;
+        GlobalVal.circle = false;
+        off('mouseover', handleHover);
+    }
+    function listenMessageListener() {
+        on('message', handleMessage);
+    }
+    function handleMessage(event) {
+        if (Boolean(event.data)) {
+            listenCircleListener();
+        }
+        else {
+            removeCircleListener();
+        }
+    }
 
     // hack console
     // "debug", "info", "warn", "log", "error"
@@ -846,6 +916,11 @@
             // 绑定全局变量
             window.__bb = this;
             this.addListenUnload();
+            // 监听message
+            listenMessageListener();
+            if (GlobalVal.circle) {
+                listenCircleListener();
+            }
         };
         Bombay.prototype.sendPerf = function () {
             handlePerf();
