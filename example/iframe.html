@@ -8,12 +8,12 @@
 </head>
 <body>
   <div>
-    <iframe id='iframe' src='index.html'></iframe>
+    <iframe id='iframe' src='./index.html'></iframe>
     <button onclick="C()">开启/关闭圈选</button>
 </div>
   <script>
     window.addEventListener('message', function(event) {
-      console.log(event)
+      console.log(event.data.path)
     }, false)
 
     var iframe = document.getElementById('iframe').contentWindow
