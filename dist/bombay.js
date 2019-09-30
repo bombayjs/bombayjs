@@ -273,6 +273,7 @@
         var h = document.documentElement.clientHeight || document.body.clientHeight;
         return w + 'x' + h;
     }
+    //# sourceMappingURL=index.js.map
 
     // 上报
     function report(e) {
@@ -594,7 +595,7 @@
             var include = getConfig('ignore').ignoreApis.findIndex(function (ignoreApi) { return item.name.indexOf(ignoreApi) > -1; });
             return include > -1 ? false : true;
         });
-        msg.res = JSON.stringify(o);
+        msg.res = o;
         report(msg);
     }
     function handleApi(url, success, time, code, msg, beigin) {
@@ -663,7 +664,6 @@
     //   }
     //   report(ret)
     // }
-    //# sourceMappingURL=handlers.js.map
 
     // hack console
     // "debug", "info", "warn", "log", "error"

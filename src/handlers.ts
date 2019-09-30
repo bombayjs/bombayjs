@@ -350,7 +350,7 @@ export function handleResource() {
     var include = getConfig('ignore').ignoreApis.findIndex(ignoreApi => item.name.indexOf(ignoreApi) > -1)
     return include > -1 ? false : true
   })
-  msg.res = JSON.stringify(o)
+  msg.res = o
   report(msg)
 }
 

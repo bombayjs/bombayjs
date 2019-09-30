@@ -11,7 +11,7 @@ interface Records {
 
 type ReportData = ErrorMsg | ResourceMsg | ApiMsg  | pvMsg | healthMsg | perfMsg | behaviorMsg | sumMsg | avgMsg | percentMsg | msgMsg
 
-type MsgType = '' | 'error' | 'res' | 'api' | 'promise' | 'pv' | 'health' | 'perf' | 'behavior' | 'sum' | 'avg' | 'percent' | 'msg'
+type MsgType = '' | 'error' | 'res' | 'api' | 'pv' | 'health' | 'perf' | 'behavior' | 'sum' | 'avg' | 'percent' | 'msg'
 
 interface CommonMsg{
   t: MsgType // 类型
@@ -52,7 +52,7 @@ interface ErrorMsg extends CommonMsg{
 interface ResourceMsg extends CommonMsg{
   dom: number // 所有解析时间 domInteractive - responseEnd
   load: number // 所有资源加载完时间 loadEventStart- fetchStart
-  res: string
+  res: PerformanceEntry[]
 }
 
 interface ApiMsg extends CommonMsg{
