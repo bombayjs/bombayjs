@@ -28,6 +28,7 @@ interface CommonMsg{
   sid: string // session id
   ct: string // 网络
   ul: string // 语言
+  o: string // 原始url
 }
 
 // pv上报

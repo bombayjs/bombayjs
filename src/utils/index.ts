@@ -19,6 +19,7 @@ export function getCommonMsg() {
     ct: u ? u.effectiveType : '',
     ul: getLang(),
     _v: '{{VERSION}}',
+    o: location.href,
   }
   return data
 }

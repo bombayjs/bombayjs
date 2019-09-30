@@ -230,6 +230,7 @@
             ct: u ? u.effectiveType : '',
             ul: getLang(),
             _v: '1.0.7',
+            o: location.href,
         };
         return data;
     }
@@ -272,7 +273,6 @@
         var h = document.documentElement.clientHeight || document.body.clientHeight;
         return w + 'x' + h;
     }
-    //# sourceMappingURL=index.js.map
 
     // 上报
     function report(e) {
@@ -663,6 +663,7 @@
     //   }
     //   report(ret)
     // }
+    //# sourceMappingURL=handlers.js.map
 
     // hack console
     // "debug", "info", "warn", "log", "error"
