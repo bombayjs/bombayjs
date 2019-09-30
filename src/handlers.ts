@@ -325,7 +325,7 @@ export function handleResource() {
       dom: 0,
       load: 0,
       t: 'res',
-      res: '',
+      res: [],
     }
   }
   var i = performance.timing || {},

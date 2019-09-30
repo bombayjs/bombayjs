@@ -573,7 +573,7 @@
             dom: 0,
             load: 0,
             t: 'res',
-            res: '',
+            res: [],
         });
         var i = performance.timing || {}, o = performance.getEntriesByType("resource") || [];
         if ("function" == typeof window.PerformanceNavigationTiming) {
