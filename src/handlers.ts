@@ -4,6 +4,8 @@ import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, resetGlobalHealth,} from './config/global'
 
+const CIRCLECLS = 'bombayjs-circle-active' // circle class类名
+const CIRCLESTYLEID = 'bombayjs-circle-css' // 插入的style标签id
 // 处理pv
 export function handlePv(): void {
   if (!Config.autoSendPv) return
@@ -51,12 +53,13 @@ export function handleClick(event) {
   // 正在圈选
   if (GlobalVal.circle) {
     let target = event.target
-    let clsLength = target.className.split(/\s+/)
+    let clsArray = target.className.split(/\s+/)
     let path = getElmPath(event.target)
-    if (clsLength > 1) {
-      path = path.replace('.bombayjs-circle-active', '')
+    // clsArray 为 ['bombayjs-circle-active] 或 ['', 'bombayjs-circle-active]时
+    if (clsArray.length === 1 || (clsArray.length === 2 && clsArray[0] === '')) {
+      path = path.replace(/\.\.bombayjs-circle-active/, '')
     } else {
-      path = path.replace('..bombayjs-circle-active', '')
+      path = path.replace(/\.bombayjs-circle-active/, '')
     }
     window.parent.postMessage({
       path,
@@ -477,20 +480,20 @@ export function handleMsg(key: string) {
 
 
 export function handleHover(e) {
-  var cls = document.getElementsByClassName('bombayjs-circle-active')
+  var cls = document.getElementsByClassName(CIRCLECLS)
   if (cls.length > 0) {
     for (var i = 0; i < cls.length; i++) {
       cls[i].className = cls[i].className.replace(/ bombayjs-circle-active/g, '')
     }
   }
-  e.target.className += ' bombayjs-circle-active'
+  e.target.className += ` ${CIRCLECLS}`
 }
 
 export function insertCss() {
-  var content = '.bombayjs-circle-active{border: #ff0000 2px solid;}'
+  var content = `.${CIRCLECLS}{border: #ff0000 2px solid;}`
   var style = document.createElement("style");
   style.type = "text/css";
-  style.id = 'bombayjs-circle-css'
+  style.id = CIRCLESTYLEID
   try{
   　　style.appendChild(document.createTextNode(content));
   }catch(ex){
@@ -501,7 +504,7 @@ export function insertCss() {
 }
 
 export function removeCss() {
-  var style = document.getElementById('bombayjs-circle-css')
+  var style = document.getElementById(CIRCLESTYLEID)
   style.parentNode.removeChild(style)
 }
 

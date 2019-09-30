@@ -77,6 +77,7 @@
     function getConfig(e) {
         return e ? Config[e] ? Config[e] : {} : {};
     }
+    //# sourceMappingURL=index.js.map
 
     var noop = function () { };
     function randomString() {
@@ -175,6 +176,7 @@
             key: n[0]
         };
     };
+    //# sourceMappingURL=tools.js.map
 
     // 默认参数
     var GlobalVal = {
@@ -211,6 +213,7 @@
             apifail: 0
         };
     }
+    //# sourceMappingURL=global.js.map
 
     function getCommonMsg() {
         var u = navigator.connection;
@@ -272,6 +275,7 @@
         var h = document.documentElement.clientHeight || document.body.clientHeight;
         return w + 'x' + h;
     }
+    //# sourceMappingURL=index.js.map
 
     // 上报
     function report(e) {
@@ -319,7 +323,10 @@
             ? window.navigator.sendBeacon(e)
             : warn("[arms] navigator.sendBeacon not surported");
     }
+    //# sourceMappingURL=reporter.js.map
 
+    var CIRCLECLS = 'bombayjs-circle-active'; // circle class类名
+    var CIRCLESTYLEID = 'bombayjs-circle-css'; // 插入的style标签id
     // 处理pv
     function handlePv() {
         if (!Config.autoSendPv)
@@ -364,13 +371,14 @@
         // 正在圈选
         if (GlobalVal.circle) {
             var target_1 = event.target;
-            var clsLength = target_1.className.split(/\s+/);
+            var clsArray = target_1.className.split(/\s+/);
             var path = getElmPath(event.target);
-            if (clsLength > 1) {
-                path = path.replace('.bombayjs-circle-active', '');
+            // clsArray 为 ['bombayjs-circle-active] 或 ['', 'bombayjs-circle-active]时
+            if (clsArray.length === 1 || (clsArray.length === 2 && clsArray[0] === '')) {
+                path = path.replace(/\.\.bombayjs-circle-active/, '');
             }
             else {
-                path = path.replace('..bombayjs-circle-active', '');
+                path = path.replace(/\.bombayjs-circle-active/, '');
             }
             window.parent.postMessage({
                 path: path,
@@ -696,19 +704,19 @@
     //   report(ret)
     // }
     function handleHover(e) {
-        var cls = document.getElementsByClassName('bombayjs-circle-active');
+        var cls = document.getElementsByClassName(CIRCLECLS);
         if (cls.length > 0) {
             for (var i = 0; i < cls.length; i++) {
                 cls[i].className = cls[i].className.replace(/ bombayjs-circle-active/g, '');
             }
         }
-        e.target.className += ' bombayjs-circle-active';
+        e.target.className += " " + CIRCLECLS;
     }
     function insertCss() {
-        var content = '.bombayjs-circle-active{border: #ff0000 2px solid;}';
+        var content = "." + CIRCLECLS + "{border: #ff0000 2px solid;}";
         var style = document.createElement("style");
         style.type = "text/css";
-        style.id = 'bombayjs-circle-css';
+        style.id = CIRCLESTYLEID;
         try {
             style.appendChild(document.createTextNode(content));
         }
@@ -719,7 +727,7 @@
         head.appendChild(style);
     }
     function removeCss() {
-        var style = document.getElementById('bombayjs-circle-css');
+        var style = document.getElementById(CIRCLESTYLEID);
         style.parentNode.removeChild(style);
     }
     function listenCircleListener() {
@@ -885,6 +893,7 @@
                 return window.__bb_onpopstate_.apply(this, a);
         };
     }
+    //# sourceMappingURL=hack.js.map
 
     var Bombay = /** @class */ (function () {
         function Bombay(options, fn) {
@@ -1003,6 +1012,7 @@
         };
         return Bombay;
     }());
+    //# sourceMappingURL=index.js.map
 
     return Bombay;
 
