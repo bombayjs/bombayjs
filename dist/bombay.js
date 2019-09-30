@@ -320,6 +320,7 @@
             ? window.navigator.sendBeacon(e)
             : warn("[arms] navigator.sendBeacon not surported");
     }
+    //# sourceMappingURL=reporter.js.map
 
     // 处理pv
     function handlePv() {
@@ -350,6 +351,17 @@
             r = s[i], (a = e.getAttribute(r)) && o.push("[".concat(r, '="').concat(a, '"]'));
         return o.join("");
     };
+    // 获取元素路径，最多保留5层
+    var getElmPath = function (e) {
+        if (!e || 1 !== e.nodeType)
+            return "";
+        var ret = [], deepLength = 0, // 层数，最多5层
+        elm = ''; // 元素
+        for (var t = e || null; t && deepLength++ < 5 && !("html" === (elm = normalTarget(t)));) {
+            ret.push(elm), t = t.parentNode;
+        }
+        return ret.reverse().join(" > ");
+    };
     function handleClick(event) {
         var target;
         try {
@@ -358,21 +370,47 @@
         catch (u) {
             target = "<unknown>";
         }
+        if (target.nodeName === 'INPUT' || target.nodeName === 'TEXTAREA')
+            return;
         if (0 !== target.length) {
             var behavior = {
                 type: 'ui.click',
                 data: {
-                    message: function (e) {
-                        if (!e || 1 !== e.nodeType)
-                            return "";
-                        for (var t = e || null, n = [], r = 0, a = 0, i = " > ".length, o = ""; t && r++ < 5 && !("html" === (o = normalTarget(t)) || r > 1 && a + n.length * i + o.length >= 80);)
-                            n.push(o), a += o.length, t = t.parentNode;
-                        return n.reverse().join(" > ");
-                    }(target),
+                    path: getElmPath(target),
+                    message: '',
                 }
             };
             // 空信息不上报
-            if (!behavior.data.message)
+            if (!behavior.data.path)
+                return;
+            var commonMsg = getCommonMsg();
+            var msg = __assign({}, commonMsg, {
+                t: 'behavior',
+                behavior: behavior,
+            });
+            report(msg);
+        }
+    }
+    function handleBlur(event) {
+        var target;
+        try {
+            target = event.target;
+        }
+        catch (u) {
+            target = "<unknown>";
+        }
+        if (target.nodeName !== 'INPUT' && target.nodeName !== 'TEXTAREA')
+            return;
+        if (0 !== target.length) {
+            var behavior = {
+                type: 'ui.blur',
+                data: {
+                    path: getElmPath(target),
+                    message: target.value
+                }
+            };
+            // 空信息不上报
+            if (!behavior.data.path || !behavior.data.message)
                 return;
             var commonMsg = getCommonMsg();
             var msg = __assign({}, commonMsg, {
@@ -517,7 +555,6 @@
     }
     // 捕获promise异常
     function reportPromiseError(error) {
-        console.log(error);
         var commonMsg = getCommonMsg();
         var msg = __assign({}, commonMsg, {
             t: 'error',
@@ -626,7 +663,6 @@
     //   }
     //   report(ret)
     // }
-    //# sourceMappingURL=handlers.js.map
 
     // hack console
     // "debug", "info", "warn", "log", "error"
@@ -812,8 +848,8 @@
         };
         // 监听click
         Bombay.prototype.addListenClick = function () {
-            on('click', handleClick);
-            on('keypress', handleClick);
+            on('click', handleClick); // 非输入框点击，会过滤掉点击输入框
+            on('blur', handleBlur); // 输入框失焦
         };
         // 监听路由
         Bombay.prototype.addListenRouterChange = function () {

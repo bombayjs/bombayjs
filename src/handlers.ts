@@ -35,6 +35,18 @@ const normalTarget = function (e) {
   return o.join("")
 }
 
+// 获取元素路径，最多保留5层
+const getElmPath = function (e) {
+  if (!e || 1 !== e.nodeType) return "";
+  var ret = [],
+      deepLength = 0, // 层数，最多5层
+      elm = '' // 元素
+  for (var t = e || null; t && deepLength++ < 5 &&!("html" === (elm = normalTarget(t)));) {
+    ret.push(elm), t = t.parentNode;
+  }
+  return ret.reverse().join(" > ")
+}
+
 export function handleClick(event) {
   var target;
   try {
@@ -42,20 +54,49 @@ export function handleClick(event) {
   } catch (u) {
     target = "<unknown>"
   }
+  if (target.nodeName === 'INPUT' || target.nodeName === 'TEXTAREA') return
+
   if (0 !== target.length) {
-    var behavior: clickBehavior = {
+    var behavior: eventBehavior = {
       type: 'ui.click',
       data: {
-        message: function (e) {
-          if (!e || 1 !== e.nodeType) return "";
-          for (var t = e || null, n = [], r = 0, a = 0,i = " > ".length, o = ""; t && r++ < 5 &&!("html" === (o = normalTarget(t)) || r > 1 && a + n.length * i + o.length >= 80);) 
-          n.push(o), a += o.length, t = t.parentNode;
-          return n.reverse().join(" > ")
-      }(target),
+        path: getElmPath(target),
+        message: '',
       }
     }
     // 空信息不上报
-    if (!behavior.data.message) return
+    if (!behavior.data.path) return
+    let commonMsg = getCommonMsg()
+    let msg: behaviorMsg = {
+      ...commonMsg,
+      ...{
+        t: 'behavior',
+        behavior,
+      }
+    }
+    report(msg)
+  }
+}
+
+export function handleBlur(event) {
+  var target;
+  try {
+    target = event.target
+  } catch (u) {
+    target = "<unknown>"
+  }
+  if (target.nodeName !== 'INPUT' && target.nodeName !== 'TEXTAREA') return
+
+  if (0 !== target.length) {
+    var behavior: eventBehavior = {
+      type: 'ui.blur',
+      data: {
+        path: getElmPath(target),
+        message: target.value
+      }
+    }
+    // 空信息不上报
+    if (!behavior.data.path || !behavior.data.message) return
     let commonMsg = getCommonMsg()
     let msg: behaviorMsg = {
       ...commonMsg,
@@ -240,7 +281,6 @@ function reportResourceError(error:any):void{
 
 // 捕获promise异常
 function reportPromiseError(error:any):void{
-  console.log(error)
   let commonMsg = getCommonMsg()
   let msg: ErrorMsg = {
     ...commonMsg,

@@ -107,7 +107,7 @@ interface behaviorMsg extends CommonMsg{
 // 手动上报 tag: string // 标签
 
 
-type Behavior = navigationBehavior | consoleBehavior | clickBehavior;
+type Behavior = navigationBehavior | consoleBehavior | eventBehavior;
 
 
 interface navigationBehavior {
@@ -126,9 +126,10 @@ interface consoleBehavior {
   },
 }
 
-interface clickBehavior {
-  type: 'ui.click',
+interface eventBehavior {
+  type: string,
   data: {
+    path: string,
     message: string,
   },
 }

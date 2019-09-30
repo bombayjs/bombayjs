@@ -1,5 +1,5 @@
 import { Config, setConfig } from './config'
-import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleResource, handleSum, handleAvg, handleMsg, handleHealth, handleApi,setPage, } from './handlers'
+import { handleErr, handlePv, handlePerf, handleHashchange, handleHistorystatechange, handleClick, handleBlur, handleResource, handleSum, handleAvg, handleMsg, handleHealth, handleApi,setPage, } from './handlers'
 import {on,off,parseHash} from './utils/tools'
 import { hackState, hackConsole, hackhook, } from './hack'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, } from './config/global'
@@ -56,8 +56,8 @@ export default class Bombay {
 
   // 监听click
   addListenClick() {
-    on('click', handleClick);
-    on('keypress', handleClick);
+    on('click', handleClick); // 非输入框点击，会过滤掉点击输入框
+    on('blur', handleBlur); // 输入框失焦
   }
 
   // 监听路由
