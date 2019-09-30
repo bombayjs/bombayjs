@@ -77,7 +77,6 @@
     function getConfig(e) {
         return e ? Config[e] ? Config[e] : {} : {};
     }
-    //# sourceMappingURL=index.js.map
 
     var noop = function () { };
     function randomString() {
@@ -176,7 +175,6 @@
             key: n[0]
         };
     };
-    //# sourceMappingURL=tools.js.map
 
     // 默认参数
     var GlobalVal = {
@@ -213,7 +211,6 @@
             apifail: 0
         };
     }
-    //# sourceMappingURL=global.js.map
 
     function getCommonMsg() {
         var u = navigator.connection;
@@ -231,7 +228,7 @@
             vp: getScreen(),
             ct: u ? u.effectiveType : '',
             ul: getLang(),
-            _v: '1.0.7',
+            _v: '1.0.8',
             o: location.href,
         };
         return data;
@@ -275,7 +272,6 @@
         var h = document.documentElement.clientHeight || document.body.clientHeight;
         return w + 'x' + h;
     }
-    //# sourceMappingURL=index.js.map
 
     // 上报
     function report(e) {
@@ -323,7 +319,6 @@
             ? window.navigator.sendBeacon(e)
             : warn("[arms] navigator.sendBeacon not surported");
     }
-    //# sourceMappingURL=reporter.js.map
 
     // 处理pv
     function handlePv() {
@@ -890,7 +885,6 @@
                 return window.__bb_onpopstate_.apply(this, a);
         };
     }
-    //# sourceMappingURL=hack.js.map
 
     var Bombay = /** @class */ (function () {
         function Bombay(options, fn) {
@@ -1009,7 +1003,6 @@
         };
         return Bombay;
     }());
-    //# sourceMappingURL=index.js.map
 
     return Bombay;
 
