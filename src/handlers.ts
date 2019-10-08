@@ -1,5 +1,5 @@
 import { Config, getConfig, } from './config'
-import { queryString, serialize, each, parseHash, warn, splitGroup,on,off, } from './utils/tools'
+import { queryString, serialize, each, parseHash, warn, splitGroup,on,off, isInIframe, } from './utils/tools'
 import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, resetGlobalHealth,} from './config/global'
@@ -62,6 +62,7 @@ export function handleClick(event) {
       path = path.replace(/\.bombayjs-circle-active/, '')
     }
     window.parent.postMessage({
+      t: 'setElmPath',
       path,
       page: GlobalVal.page,
     }, '*')
@@ -243,6 +244,12 @@ export function setPage(page, isFirst?: boolean) {
   !isFirst && handleHealth()
   handleNavigation(page)
   setTimeout(()=> {
+    if (isInIframe) {
+      window.parent.postMessage({
+        t: 'setPage',
+        page: location.href,
+      }, '*')
+    }
     setGlobalPage(page)
     setGlobalSid()
     handlePv()
@@ -526,12 +533,24 @@ export function listenMessageListener() {
   on('message', handleMessage);
 }
 
+/**
+ *
+ * @param {*} event {t: '', v: ''}
+ *  t: type
+ *  v: value
+ */
 function handleMessage(event) {
   // 防止其他message的干扰
-  if (typeof event.data !== 'boolean') return
-  if (Boolean(event.data)) {
-    listenCircleListener()
-  } else {
-    removeCircleListener()
+  if (!event.data || !event.data.t) return
+  if (event.data.t === 'setCircle') {
+    if (Boolean(event.data)) {
+      listenCircleListener()
+    } else {
+      removeCircleListener()
+    }
+  } else if (event.data.t === 'back') {
+    window.history.back()
+  } else if (event.data.t === 'forward') {
+    window.history.forward()
   }
 }

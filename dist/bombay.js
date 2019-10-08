@@ -176,6 +176,7 @@
             key: n[0]
         };
     };
+    var isInIframe = self != top;
     //# sourceMappingURL=tools.js.map
 
     // 默认参数
@@ -381,6 +382,7 @@
                 path = path.replace(/\.bombayjs-circle-active/, '');
             }
             window.parent.postMessage({
+                t: 'setElmPath',
                 path: path,
                 page: GlobalVal.page,
             }, '*');
@@ -533,6 +535,12 @@
         !isFirst && handleHealth();
         handleNavigation(page);
         setTimeout(function () {
+            if (isInIframe) {
+                window.parent.postMessage({
+                    t: 'setPage',
+                    page: location.href,
+                }, '*');
+            }
             setGlobalPage(page);
             setGlobalSid();
             handlePv();
@@ -745,15 +753,29 @@
     function listenMessageListener() {
         on('message', handleMessage);
     }
+    /**
+     *
+     * @param {*} event {t: '', v: ''}
+     *  t: type
+     *  v: value
+     */
     function handleMessage(event) {
         // 防止其他message的干扰
-        if (typeof event.data !== 'boolean')
+        if (!event.data || !event.data.t)
             return;
-        if (Boolean(event.data)) {
-            listenCircleListener();
+        if (event.data.t === 'setCircle') {
+            if (Boolean(event.data)) {
+                listenCircleListener();
+            }
+            else {
+                removeCircleListener();
+            }
         }
-        else {
-            removeCircleListener();
+        else if (event.data.t === 'back') {
+            window.history.back();
+        }
+        else if (event.data.t === 'forward') {
+            window.history.forward();
         }
     }
 
@@ -1015,6 +1037,7 @@
         };
         return Bombay;
     }());
+    //# sourceMappingURL=index.js.map
 
     return Bombay;
 

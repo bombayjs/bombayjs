@@ -118,3 +118,5 @@ export const splitGroup = function (e: string) {
   key: n[0]
 }
 }
+
+export const isInIframe = self != top
