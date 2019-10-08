@@ -32,7 +32,7 @@ export default class Bombay {
     // 绑定全局变量
     window.__bb = this
     this.addListenUnload()
-
+    
     // 监听message
     listenMessageListener()
     if (GlobalVal.circle) {

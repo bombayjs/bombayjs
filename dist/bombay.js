@@ -746,6 +746,9 @@
         on('message', handleMessage);
     }
     function handleMessage(event) {
+        // 防止其他message的干扰
+        if (typeof event.data !== 'boolean')
+            return;
         if (Boolean(event.data)) {
             listenCircleListener();
         }
@@ -1012,7 +1015,6 @@
         };
         return Bombay;
     }());
-    //# sourceMappingURL=index.js.map
 
     return Bombay;
 
