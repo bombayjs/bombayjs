@@ -543,7 +543,7 @@ function handleMessage(event) {
   // 防止其他message的干扰
   if (!event.data || !event.data.t) return
   if (event.data.t === 'setCircle') {
-    if (Boolean(event.data)) {
+    if (Boolean(event.data.v)) {
       listenCircleListener()
     } else {
       removeCircleListener()
