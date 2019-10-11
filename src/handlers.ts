@@ -251,7 +251,8 @@ export function setPage(page, isFirst?: boolean) {
     if (isInIframe) {
       window.parent.postMessage({
         t: 'setPage',
-        page: location.href,
+        href: location.href,
+        page,
       }, '*')
     }
     setGlobalPage(page)
