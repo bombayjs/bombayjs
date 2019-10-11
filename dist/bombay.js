@@ -348,10 +348,13 @@
         var t, n, r, a, i, o = [];
         if (!e || !e.tagName)
             return "";
-        if (o.push(e.tagName.toLowerCase()), e.id && o.push("#".concat(e.id)), (t = e.className) &&
-            "[object String]" === Object.prototype.toString.call(t))
-            for (n = t.split(/\s+/), i = 0; i < n.length; i++)
-                o.push(".".concat(n[i]));
+        if (o.push(e.tagName.toLowerCase()), e.id && o.push("#".concat(e.id)), (t = e.className) && "[object String]" === Object.prototype.toString.call(t)) {
+            for (n = t.split(/\s+/), i = 0; i < n.length; i++) {
+                // className包含active的不加入路径
+                if (n[i].indexOf('active') < 0)
+                    o.push(".".concat(n[i]));
+            }
+        }
         var s = ["type", "name", "title", "alt"];
         for (i = 0; i < s.length; i++)
             r = s[i], (a = e.getAttribute(r)) && o.push("[".concat(r, '="').concat(a, '"]'));
@@ -363,6 +366,7 @@
             return "";
         var ret = [], deepLength = 0, // 层数，最多5层
         elm = ''; // 元素
+        ret.push("(" + e.innerText.substr(0, 50) + ")");
         for (var t = e || null; t && deepLength++ < 5 && !("html" === (elm = normalTarget(t)));) {
             ret.push(elm), t = t.parentNode;
         }
