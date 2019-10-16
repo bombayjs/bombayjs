@@ -156,7 +156,20 @@ export function handlePerf(): void {
   const performance = window.performance
   if (!performance || 'object' !== typeof performance) return
 
-  let data: any = {},
+  let data: any = {
+    dns: 0, // DNS查询 domainLookupEnd - domainLookupStart
+    tcp: 0, // TCP链接
+    ssl: 0, // SSL建连
+    ttfb: 0, // 请求响应
+    trans: 0,
+    dom: 0,
+    res: 0,
+    firstbyte: 0,
+    fpt: 0,
+    tti: 0,
+    ready: 0,
+    load: 0 // domready时间 
+  },
     timing = performance.timing || {},
     now = Date.now(),
     type = 1;
@@ -184,7 +197,7 @@ export function handlePerf(): void {
   }, function (e, t) {
       var r = timing[TIMING_KEYS[e[1]]],
           o = timing[TIMING_KEYS[e[0]]];
-      if (2 === type || r > 0 && o > 0) {
+      if (2 === type || r !== undefined && o !== undefined) {
           var c = Math.round(o - r);
           c >= 0 && c < 36e5 && (data[t] = c)
       }
@@ -393,7 +406,7 @@ export function handleResource() {
   }, function (e, t) {
       var r = i[TIMING_KEYS[e[1]]],
           o = i[TIMING_KEYS[e[0]]];
-      if (r > 0 && o > 0) {
+      if (r !== undefined && o !== undefined) {
           var s = Math.round(o - r);
           s >= 0 && s < 36e5 && (msg[t] = s)
       }
