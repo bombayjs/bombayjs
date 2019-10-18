@@ -119,4 +119,14 @@ export const splitGroup = function (e: string) {
 }
 }
 
+// HACK: 在IE浏览器及猎豹浏览器中，对象不支持findIndex的问题
+export const findIndex = function(arr, fn) { 
+  return arr.reduce(function(carry, item, idx) { 
+   if (fn(item, idx)) { 
+    return idx
+   } 
+   return carry
+  } , -1)
+}
+
 export const isInIframe = self != top

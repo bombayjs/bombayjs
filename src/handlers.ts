@@ -1,5 +1,5 @@
 import { Config, getConfig, } from './config'
-import { queryString, serialize, each, parseHash, warn, splitGroup,on,off, isInIframe, } from './utils/tools'
+import { queryString, serialize, each, parseHash, warn, splitGroup,on,off, isInIframe, findIndex } from './utils/tools'
 import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, resetGlobalHealth,} from './config/global'
@@ -400,7 +400,7 @@ export function handleResource() {
   })
   // 过滤忽略的url
   o = o.filter(item => {
-    var include = getConfig('ignore').ignoreApis.findIndex(ignoreApi => item.name.indexOf(ignoreApi) > -1)
+    var include = findIndex(getConfig('ignore').ignoreApis, ignoreApi => item.name.indexOf(ignoreApi) > -1)
     return include > -1 ? false : true
   })
   msg.res = o
@@ -429,7 +429,7 @@ export function handleApi(url, success, time, code, msg, beigin) {
     }
   }
   // 过滤忽略的url
-  var include = getConfig('ignore').ignoreApis.findIndex(ignoreApi => url.indexOf(ignoreApi) > -1)
+  var include = findIndex(getConfig('ignore').ignoreApis, ignoreApi => url.indexOf(ignoreApi) > -1)
   if (include > -1) return
   report(apiMsg)
 }
