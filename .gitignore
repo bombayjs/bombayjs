@@ -2,11 +2,11 @@ node_modules/
 src/app/node_modules/
 src/sdk/node_modules/
 src/service/node_modules/
+test/**/node_modules/
 .idea/
 .DS_Store
 .vscode
 
 tests/data/
-
 package-lock.json
 npm-debug.log
