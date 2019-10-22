@@ -186,7 +186,6 @@
         }, -1);
     };
     var isInIframe = self != top;
-    //# sourceMappingURL=tools.js.map
 
     // 默认参数
     var GlobalVal = {
@@ -515,10 +514,6 @@
                 }, function (e, t) {
                     var r = timing[TIMING_KEYS[e[1]]], o = timing[TIMING_KEYS[e[0]]];
                     var c = Math.round(o - r);
-                    if (t === 'dom') {
-                        console.log('window.performance.timing', window.performance.timing);
-                        console.log('window.performance.timing.domInteractive', window.performance.timing.domInteractive);
-                    }
                     if (2 === type || r !== undefined && o !== undefined) {
                         if (t === 'dom') {
                             var c = Math.round(o - r);
@@ -572,18 +567,16 @@
     function setPage(page, isFirst) {
         !isFirst && handleHealth();
         handleNavigation(page);
-        setTimeout(function () {
-            if (isInIframe) {
-                window.parent.postMessage({
-                    t: 'setPage',
-                    href: location.href,
-                    page: page,
-                }, '*');
-            }
-            setGlobalPage(page);
-            setGlobalSid();
-            handlePv();
-        }, 300);
+        if (isInIframe) {
+            window.parent.postMessage({
+                t: 'setPage',
+                href: location.href,
+                page: page,
+            }, '*');
+        }
+        setGlobalPage(page);
+        setGlobalSid();
+        handlePv();
     }
     function handleHealth() {
         var healthy = GlobalVal._health.errcount ? 0 : 1;
@@ -817,6 +810,7 @@
             window.history.forward();
         }
     }
+    //# sourceMappingURL=handlers.js.map
 
     // hack console
     // "debug", "info", "warn", "log", "error"
@@ -989,6 +983,7 @@
                 listenCircleListener();
             }
         };
+        // 发送页面性能
         Bombay.prototype.sendPerf = function () {
             handlePerf();
         };

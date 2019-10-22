@@ -200,10 +200,6 @@ export function handlePerf(): void {
           var r = timing[TIMING_KEYS[e[1]]],
               o = timing[TIMING_KEYS[e[0]]];
               var c = Math.round(o - r);
-              if(t === 'dom') {
-                console.log('window.performance.timing', window.performance.timing)
-                console.log('window.performance.timing.domInteractive', window.performance.timing.domInteractive)
-              }
           if (2 === type || r !== undefined && o !== undefined) {
               if(t === 'dom') {
                 var c = Math.round(o - r);
@@ -271,18 +267,16 @@ export function handleNavigation(page): void {
 export function setPage(page, isFirst?: boolean) {
   !isFirst && handleHealth()
   handleNavigation(page)
-  setTimeout(()=> {
-    if (isInIframe) {
-      window.parent.postMessage({
-        t: 'setPage',
-        href: location.href,
-        page,
-      }, '*')
-    }
-    setGlobalPage(page)
-    setGlobalSid()
-    handlePv()
-  }, 300)
+  if (isInIframe) {
+    window.parent.postMessage({
+      t: 'setPage',
+      href: location.href,
+      page,
+    }, '*')
+  }
+  setGlobalPage(page)
+  setGlobalSid()
+  handlePv()
 }
 
 export function handleHealth() {
