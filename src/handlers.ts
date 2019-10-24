@@ -1,5 +1,5 @@
 import { Config, getConfig, } from './config'
-import { queryString, serialize, each, parseHash, warn, splitGroup,on,off, isInIframe, findIndex } from './utils/tools'
+import { queryString, serialize, each, parseHash, warn, splitGroup,on,off, isInIframe, findIndex, checkEdge, isTypeOf } from './utils/tools'
 import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, resetGlobalHealth,} from './config/global'
@@ -421,6 +421,31 @@ export function handleResource() {
     var include = findIndex(getConfig('ignore').ignoreApis, ignoreApi => item.name.indexOf(ignoreApi) > -1)
     return include > -1 ? false : true
   })
+
+  // 兼容Edge浏览器无法直接使用PerformanceResourceTiming对象类型的数据进行上报，处理方式是定义变量重新赋值
+  if (checkEdge()) {
+    var edgeResources = []
+    each(o, function (oItem) {
+      edgeResources.push({
+        connectEnd: oItem.connectEnd,
+        connectStart: oItem.connectStart,
+        domainLookupEnd: oItem.connectStart,
+        domainLookupStart: oItem.domainLookupStart,
+        duration: oItem.duration,
+        entryType: oItem.entryType,
+        fetchStart: oItem.fetchStart,
+        initiatorType: oItem.initiatorType,
+        name: oItem.name,
+        redirectEnd: oItem.redirectEnd,
+        redirectStart: oItem.redirectStart,
+        responseEnd: oItem.responseEnd,
+        responseStart: oItem.responseStart,
+        startTime: oItem.startTime
+      })
+    })
+    o = edgeResources
+  }
+
   msg.res = o
   report(msg)
 }
