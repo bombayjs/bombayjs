@@ -129,4 +129,10 @@ export const findIndex = function(arr, fn) {
   } , -1)
 }
 
+// 检查是否是Edge浏览器
+export const checkEdge = function() { 
+  var isEdge = navigator.userAgent.indexOf("Edge") > -1
+  return isEdge
+}
+
 export const isInIframe = self != top

@@ -185,6 +185,11 @@
             return carry;
         }, -1);
     };
+    // 检查是否是Edge浏览器
+    var checkEdge = function () {
+        var isEdge = navigator.userAgent.indexOf("Edge") > -1;
+        return isEdge;
+    };
     var isInIframe = self != top;
     //# sourceMappingURL=tools.js.map
 
@@ -490,46 +495,54 @@
             ready: 0,
             load: 0 // domready时间 
         }, timing = performance.timing || {}, now = Date.now(), type = 1;
-        // 根据PerformanceNavigationTiming计算更准确
-        if ("function" == typeof window.PerformanceNavigationTiming) {
-            var c = performance.getEntriesByType("navigation")[0];
-            c && (timing = c, type = 2);
-        }
-        // 计算data
-        each({
-            dns: [3, 2],
-            tcp: [5, 4],
-            ssl: [5, 17],
-            ttfb: [7, 6],
-            trans: [8, 7],
-            dom: [10, 8],
-            res: [14, 12],
-            firstbyte: [7, 2],
-            fpt: [8, 1],
-            tti: [10, 1],
-            ready: [12, 1],
-            load: [14, 1]
-        }, function (e, t) {
-            var r = timing[TIMING_KEYS[e[1]]], o = timing[TIMING_KEYS[e[0]]];
-            if (2 === type || r !== undefined && o !== undefined) {
-                var c = Math.round(o - r);
-                c >= 0 && c < 36e5 && (data[t] = c);
+        var stateCheck = setInterval(function () {
+            if (timing.loadEventEnd) {
+                clearInterval(stateCheck);
+                // 根据PerformanceNavigationTiming计算更准确
+                if ("function" == typeof window.PerformanceNavigationTiming) {
+                    var c = performance.getEntriesByType("navigation")[0];
+                    c && (timing = c, type = 2);
+                }
+                // 计算data
+                each({
+                    dns: [3, 2],
+                    tcp: [5, 4],
+                    ssl: [5, 17],
+                    ttfb: [7, 6],
+                    trans: [8, 7],
+                    dom: [10, 8],
+                    res: [14, 12],
+                    firstbyte: [7, 2],
+                    fpt: [8, 1],
+                    tti: [10, 1],
+                    ready: [12, 1],
+                    load: [14, 1]
+                }, function (e, t) {
+                    var r = timing[TIMING_KEYS[e[1]]], o = timing[TIMING_KEYS[e[0]]];
+                    var c = Math.round(o - r);
+                    if (2 === type || r !== undefined && o !== undefined) {
+                        if (t === 'dom') {
+                            var c = Math.round(o - r);
+                        }
+                        c >= 0 && c < 36e5 && (data[t] = c);
+                    }
+                });
+                var u = window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection, f = performance.navigation || { type: undefined };
+                data.ct = u ? u.effectiveType || u.type : "";
+                var l = u ? u.downlink || u.downlinkMax || u.bandwidth || null : null;
+                if ((l = l > 999 ? 999 : l) && (data.bandwidth = l), data.navtype = 1 === f.type ? "Reload" : "Other", 1 === type && timing[TIMING_KEYS[16]] > 0 && timing[TIMING_KEYS[1]] > 0) {
+                    var h = timing[TIMING_KEYS[16]] - timing[TIMING_KEYS[1]];
+                    h >= 0 && h < 36e5 && (data.fpt = h);
+                }
+                1 === type && timing[TIMING_KEYS[1]] > 0
+                    ? data.begin = timing[TIMING_KEYS[1]]
+                    : 2 === type && data.load > 0 ? data.begin = now -
+                        data.load : data.begin = now;
+                var commonMsg = getCommonMsg();
+                var msg = __assign(__assign(__assign({}, commonMsg), { t: 'perf' }), data);
+                report(msg);
             }
-        });
-        var u = window.navigator.connection, f = performance.navigation || { type: undefined };
-        data.ct = u ? u.effectiveType || u.type : "";
-        var l = u ? u.downlink || u.downlinkMax || u.bandwidth || null : null;
-        if ((l = l > 999 ? 999 : l) && (data.bandwidth = l), data.navtype = 1 === f.type ? "Reload" : "Other", 1 === type && timing[TIMING_KEYS[16]] > 0 && timing[TIMING_KEYS[1]] > 0) {
-            var h = timing[TIMING_KEYS[16]] - timing[TIMING_KEYS[1]];
-            h >= 0 && h < 36e5 && (data.fpt = h);
-        }
-        1 === type && timing[TIMING_KEYS[1]] > 0
-            ? data.begin = timing[TIMING_KEYS[1]]
-            : 2 === type && data.load > 0 ? data.begin = now -
-                data.load : data.begin = now;
-        var commonMsg = getCommonMsg();
-        var msg = __assign(__assign(__assign({}, commonMsg), { t: 'perf' }), data);
-        report(msg);
+        }, 50);
     }
     // 处理hash变化
     // 注意在路由栈的路由不会触发
@@ -560,18 +573,16 @@
     function setPage(page, isFirst) {
         !isFirst && handleHealth();
         handleNavigation(page);
-        setTimeout(function () {
-            if (isInIframe) {
-                window.parent.postMessage({
-                    t: 'setPage',
-                    href: location.href,
-                    page: page,
-                }, '*');
-            }
-            setGlobalPage(page);
-            setGlobalSid();
-            handlePv();
-        }, 300);
+        if (isInIframe) {
+            window.parent.postMessage({
+                t: 'setPage',
+                href: location.href,
+                page: page,
+            }, '*');
+        }
+        setGlobalPage(page);
+        setGlobalSid();
+        handlePv();
     }
     function handleHealth() {
         var healthy = GlobalVal._health.errcount ? 0 : 1;
@@ -669,6 +680,29 @@
             var include = findIndex(getConfig('ignore').ignoreApis, function (ignoreApi) { return item.name.indexOf(ignoreApi) > -1; });
             return include > -1 ? false : true;
         });
+        // 兼容Edge浏览器无法直接使用PerformanceResourceTiming对象类型的数据进行上报，处理方式是定义变量重新赋值
+        if (checkEdge()) {
+            var edgeResources = [];
+            each(o, function (oItem) {
+                edgeResources.push({
+                    connectEnd: oItem.connectEnd,
+                    connectStart: oItem.connectStart,
+                    domainLookupEnd: oItem.connectStart,
+                    domainLookupStart: oItem.domainLookupStart,
+                    duration: oItem.duration,
+                    entryType: oItem.entryType,
+                    fetchStart: oItem.fetchStart,
+                    initiatorType: oItem.initiatorType,
+                    name: oItem.name,
+                    redirectEnd: oItem.redirectEnd,
+                    redirectStart: oItem.redirectStart,
+                    responseEnd: oItem.responseEnd,
+                    responseStart: oItem.responseStart,
+                    startTime: oItem.startTime
+                });
+            });
+            o = edgeResources;
+        }
         msg.res = o;
         report(msg);
     }
@@ -805,6 +839,7 @@
             window.history.forward();
         }
     }
+    //# sourceMappingURL=handlers.js.map
 
     // hack console
     // "debug", "info", "warn", "log", "error"

@@ -1,5 +1,5 @@
 import { Config, getConfig, } from './config'
-import { queryString, serialize, each, parseHash, warn, splitGroup,on,off, isInIframe, findIndex } from './utils/tools'
+import { queryString, serialize, each, parseHash, warn, splitGroup,on,off, isInIframe, findIndex, checkEdge, isTypeOf } from './utils/tools'
 import { getCommonMsg } from './utils/index'
 import { report } from './reporter'
 import { setGlobalPage, setGlobalSid, setGlobalHealth, GlobalVal, resetGlobalHealth,} from './config/global'
@@ -155,7 +155,6 @@ const TIMING_KEYS = ["", "fetchStart", "domainLookupStart", "domainLookupEnd", "
 export function handlePerf(): void {
   const performance = window.performance
   if (!performance || 'object' !== typeof performance) return
-
   let data: any = {
     dns: 0, // DNS查询 domainLookupEnd - domainLookupStart
     tcp: 0, // TCP链接
@@ -170,58 +169,66 @@ export function handlePerf(): void {
     ready: 0,
     load: 0 // domready时间 
   },
-    timing = performance.timing || {},
-    now = Date.now(),
-    type = 1;
-
-  // 根据PerformanceNavigationTiming计算更准确
-  if ("function" == typeof window.PerformanceNavigationTiming) {
-      var c = performance.getEntriesByType("navigation")[0];
-      c && (timing = c, type = 2)
-  }
-
-  // 计算data
-  each({
-    dns: [3, 2],
-    tcp: [5, 4],
-    ssl: [5, 17],
-    ttfb: [7, 6],
-    trans: [8, 7],
-    dom: [10, 8],
-    res: [14, 12],
-    firstbyte: [7, 2],
-    fpt: [8, 1],
-    tti: [10, 1],
-    ready: [12, 1],
-    load: [14, 1]
-  }, function (e, t) {
-      var r = timing[TIMING_KEYS[e[1]]],
-          o = timing[TIMING_KEYS[e[0]]];
-      if (2 === type || r !== undefined && o !== undefined) {
-          var c = Math.round(o - r);
-          c >= 0 && c < 36e5 && (data[t] = c)
+  timing = performance.timing || {},
+  now = Date.now(),
+  type = 1;
+  let stateCheck = setInterval(() => {
+    if (timing.loadEventEnd) {
+      clearInterval(stateCheck)
+    
+      // 根据PerformanceNavigationTiming计算更准确
+      if ("function" == typeof window.PerformanceNavigationTiming) {
+          var c = performance.getEntriesByType("navigation")[0];
+          c && (timing = c, type = 2)
       }
-  });
-
-  var u = window.navigator.connection,
-      f = performance.navigation || { type: undefined };
-  data.ct = u ? u.effectiveType || u.type : "";
-  var l = u ? u.downlink || u.downlinkMax || u.bandwidth || null : null;
-  if ((l = l > 999 ? 999 : l) && (data.bandwidth = l), data.navtype = 1 === f.type ? "Reload" :"Other", 1 === type && timing[TIMING_KEYS[16]] > 0 && timing[TIMING_KEYS[1]] > 0) {
-      var h = timing[TIMING_KEYS[16]] - timing[TIMING_KEYS[1]];
-      h >= 0 && h < 36e5 && (data.fpt = h)
-  }
-  1 === type && timing[TIMING_KEYS[1]] > 0 
-        ? data.begin = timing[TIMING_KEYS[1]] 
-        : 2 === type && data.load > 0 ? data.begin = now -
-        data.load : data.begin = now
-  let commonMsg = getCommonMsg()
-  let msg: perfMsg = {
-    ...commonMsg,
-    t: 'perf',
-    ...data,
-  }
-  report(msg)
+    
+      // 计算data
+      each({
+        dns: [3, 2],
+        tcp: [5, 4],
+        ssl: [5, 17],
+        ttfb: [7, 6],
+        trans: [8, 7],
+        dom: [10, 8],
+        res: [14, 12],
+        firstbyte: [7, 2],
+        fpt: [8, 1],
+        tti: [10, 1],
+        ready: [12, 1],
+        load: [14, 1]
+      }, function (e, t) {
+          var r = timing[TIMING_KEYS[e[1]]],
+              o = timing[TIMING_KEYS[e[0]]];
+              var c = Math.round(o - r);
+          if (2 === type || r !== undefined && o !== undefined) {
+              if(t === 'dom') {
+                var c = Math.round(o - r);
+              }
+              c >= 0 && c < 36e5 && (data[t] = c)
+          }
+      });
+    
+      var u = window.navigator.connection || (window.navigator as any).mozConnection || (window.navigator as any).webkitConnection,
+          f = performance.navigation || { type: undefined };
+      data.ct = u ? u.effectiveType || u.type : "";
+      var l = u ? u.downlink || u.downlinkMax || u.bandwidth || null : null;
+      if ((l = l > 999 ? 999 : l) && (data.bandwidth = l), data.navtype = 1 === f.type ? "Reload" :"Other", 1 === type && timing[TIMING_KEYS[16]] > 0 && timing[TIMING_KEYS[1]] > 0) {
+          var h = timing[TIMING_KEYS[16]] - timing[TIMING_KEYS[1]];
+          h >= 0 && h < 36e5 && (data.fpt = h)
+      }
+      1 === type && timing[TIMING_KEYS[1]] > 0 
+            ? data.begin = timing[TIMING_KEYS[1]] 
+            : 2 === type && data.load > 0 ? data.begin = now -
+            data.load : data.begin = now
+      let commonMsg = getCommonMsg()
+      let msg: perfMsg = {
+        ...commonMsg,
+        t: 'perf',
+        ...data,
+      }
+      report(msg)
+    }
+  }, 50)
 }
 
 // 处理hash变化
@@ -260,18 +267,16 @@ export function handleNavigation(page): void {
 export function setPage(page, isFirst?: boolean) {
   !isFirst && handleHealth()
   handleNavigation(page)
-  setTimeout(()=> {
-    if (isInIframe) {
-      window.parent.postMessage({
-        t: 'setPage',
-        href: location.href,
-        page,
-      }, '*')
-    }
-    setGlobalPage(page)
-    setGlobalSid()
-    handlePv()
-  }, 300)
+  if (isInIframe) {
+    window.parent.postMessage({
+      t: 'setPage',
+      href: location.href,
+      page,
+    }, '*')
+  }
+  setGlobalPage(page)
+  setGlobalSid()
+  handlePv()
 }
 
 export function handleHealth() {
@@ -416,6 +421,31 @@ export function handleResource() {
     var include = findIndex(getConfig('ignore').ignoreApis, ignoreApi => item.name.indexOf(ignoreApi) > -1)
     return include > -1 ? false : true
   })
+
+  // 兼容Edge浏览器无法直接使用PerformanceResourceTiming对象类型的数据进行上报，处理方式是定义变量重新赋值
+  if (checkEdge()) {
+    var edgeResources = []
+    each(o, function (oItem) {
+      edgeResources.push({
+        connectEnd: oItem.connectEnd,
+        connectStart: oItem.connectStart,
+        domainLookupEnd: oItem.connectStart,
+        domainLookupStart: oItem.domainLookupStart,
+        duration: oItem.duration,
+        entryType: oItem.entryType,
+        fetchStart: oItem.fetchStart,
+        initiatorType: oItem.initiatorType,
+        name: oItem.name,
+        redirectEnd: oItem.redirectEnd,
+        redirectStart: oItem.redirectStart,
+        responseEnd: oItem.responseEnd,
+        responseStart: oItem.responseStart,
+        startTime: oItem.startTime
+      })
+    })
+    o = edgeResources
+  }
+
   msg.res = o
   report(msg)
 }
