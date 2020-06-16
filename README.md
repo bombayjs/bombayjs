@@ -23,6 +23,7 @@ npm run build
 * hack onpopstate
 * 暴露全局变量__bb
 * 埋点 sum avg msg
+* 无埋点方案
 
 ## 用法
 
